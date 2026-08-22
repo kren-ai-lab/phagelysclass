@@ -199,10 +199,31 @@ def count_dict(df: pd.DataFrame, col: str | None) -> dict[str, int]:
     return {str(k): int(v) for k, v in counts.items()}
 
 
-def composition_string(counts: dict[str, int]) -> str:
+def composition_string(
+    counts: dict[str, int],
+    *,
+    empty_label: str = "NA",
+) -> str:
+    """
+    Render a compact composition string.
+
+    Empty/blank category names are shown explicitly as `NA` instead of
+    producing ambiguous strings such as `=319`.
+    """
     if not counts:
         return ""
-    items = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))
+
+    normalized = {}
+    for name, n in counts.items():
+        label = str(name).strip()
+        if not label:
+            label = empty_label
+        normalized[label] = normalized.get(label, 0) + int(n)
+
+    items = sorted(
+        normalized.items(),
+        key=lambda kv: (-kv[1], kv[0]),
+    )
     return "; ".join(f"{name}={n}" for name, n in items)
 
 
