@@ -1,0 +1,3 @@
+query_id	scope	query	rationale	enabled
+PHAGE_CAUDOVIRICETES	caudoviricetes	taxonomy_id:2731619	Primary tailed-phage protein universe. All UniProtKB proteins assigned to Caudoviricetes or descendant taxa are retrieved without imposing functional-label assumptions.	true
+PHAGE_NAMED_NONCAUDOVIRICETES	named_phage_outside_caudoviricetes	(taxonomy_id:10239) AND NOT (taxonomy_id:2731619) AND ((taxonomy_name:phage) OR (taxonomy_name:bacteriophage))	Supplementary viral proteins outside Caudoviricetes whose taxonomic names explicitly indicate phage/bacteriophage context.	true
