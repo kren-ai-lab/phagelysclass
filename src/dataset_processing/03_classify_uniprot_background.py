@@ -5,6 +5,9 @@
 Classify the broad raw UniProtKB phage-protein background into evidence-state
 candidate pools for PhageLysClass.
 
+Rule-set note (v2): lytic identity is not inferred from free-text Function [CC]
+mentions, and generic protease/peptidase terms are not clean-negative evidence.
+
 IMPORTANT
 ---------
 This script does NOT create final ML datasets and does NOT declare ground-truth
@@ -45,6 +48,13 @@ Precedence
 1. exact sequence overlap with PhageLysData Core
 2. highest-priority enabled local evidence rule
 3. u_other_unresolved
+
+Rule design guardrails
+----------------------
+- Free-text Function [CC] may support context, but it is not used by the direct
+  lytic rules to infer protein identity.
+- Generic "protease" / "peptidase" terminology is not sufficient evidence for a
+  clean negative.
 
 No sequence is discarded because of homology. Exact identity to PhageLysData
 Core is marked only to prevent known positives from later entering U/N pools.
