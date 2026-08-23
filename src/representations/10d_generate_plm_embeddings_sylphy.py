@@ -121,14 +121,10 @@ GPU_MEMORY_TOLERANCE_MB = 512
 FROZEN_MODELS = [
     "elnaggarlab/ankh2-ext1",
     "esmc_300m",
-    "esmc_600m",
     "facebook/esm2_t6_8m_ur50d",
     "facebook/esm2_t12_35m_ur50d",
     "facebook/esm2_t30_150m_ur50d",
-    "facebook/esm2_t33_650m_ur50d",
-    "raphaelmourad/mistral-prot-v1-15m",
     "rostlab/prot_bert",
-    "rostlab/prot_t5_xl_bfd",
     "rostlab/prot_t5_xl_uniref50",
 ]
 
@@ -137,14 +133,10 @@ FROZEN_MODELS = [
 MODEL_BATCH_SIZES = {
     "elnaggarlab/ankh2-ext1": 1,
     "esmc_300m": 2,
-    "esmc_600m": 1,
     "facebook/esm2_t6_8m_ur50d": 16,
     "facebook/esm2_t12_35m_ur50d": 16,
     "facebook/esm2_t30_150m_ur50d": 4,
-    "facebook/esm2_t33_650m_ur50d": 1,
-    "raphaelmourad/mistral-prot-v1-15m": 16,
     "rostlab/prot_bert": 2,
-    "rostlab/prot_t5_xl_bfd": 1,
     "rostlab/prot_t5_xl_uniref50": 1,
 }
 
