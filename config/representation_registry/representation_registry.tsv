@@ -1,0 +1,10 @@
+representation_id	family	format	main_path	index_path	expected_dimension	status
+roxy_48	roxy	dense_parquet	data/representations/roxy_characterization/characterization_48.parquet		48	READY
+onehot_1024	onehot	sparse_csr	data/representations/sylphy_onehot/onehot_csr.npz	data/representations/sylphy_onehot/row_index.tsv.gz	20480	READY
+esm2_t6_8m	plm	dense_parquet	data/representations/sylphy_embeddings/models/facebook_esm2_t6_8m_ur50d/embeddings_last_mean_fp32.parquet		320	READY
+ankh2_ext1	plm	dense_parquet	data/representations/sylphy_embeddings/models/elnaggarlab_ankh2-ext1/embeddings_last_mean_fp32.parquet			PENDING
+esmc_300m	plm	dense_parquet	data/representations/sylphy_embeddings/models/esmc_300m/embeddings_last_mean_fp32.parquet			PENDING
+esm2_t12_35m	plm	dense_parquet	data/representations/sylphy_embeddings/models/facebook_esm2_t12_35m_ur50d/embeddings_last_mean_fp32.parquet		480	PENDING
+esm2_t30_150m	plm	dense_parquet	data/representations/sylphy_embeddings/models/facebook_esm2_t30_150m_ur50d/embeddings_last_mean_fp32.parquet		640	PENDING
+protbert	plm	dense_parquet	data/representations/sylphy_embeddings/models/rostlab_prot_bert/embeddings_last_mean_fp32.parquet		1024	PENDING
+prott5_xl_uniref50	plm	dense_parquet	data/representations/sylphy_embeddings/models/rostlab_prot_t5_xl_uniref50/embeddings_last_mean_fp32.parquet		1024	PENDING
