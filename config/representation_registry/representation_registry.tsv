@@ -5,6 +5,6 @@ esm2_t6_8m	plm	dense_parquet	data/representations/sylphy_embeddings/models/faceb
 ankh2_ext1	plm	dense_parquet	data/representations/sylphy_embeddings/models/elnaggarlab_ankh2-ext1/embeddings_last_mean_fp32.parquet			PENDING
 esmc_300m	plm	dense_parquet	data/representations/sylphy_embeddings/models/esmc_300m/embeddings_last_mean_fp32.parquet			PENDING
 esm2_t12_35m	plm	dense_parquet	data/representations/sylphy_embeddings/models/facebook_esm2_t12_35m_ur50d/embeddings_last_mean_fp32.parquet		480	PENDING
-esm2_t30_150m	plm	dense_parquet	data/representations/sylphy_embeddings/models/facebook_esm2_t30_150m_ur50d/embeddings_last_mean_fp32.parquet		640	PENDING
+esm2_t30_150m	plm	dense_parquet	data/representations/sylphy_embeddings/models/facebook_esm2_t30_150m_ur50d/embeddings_last_mean_fp32.parquet		640	READY
 protbert	plm	dense_parquet	data/representations/sylphy_embeddings/models/rostlab_prot_bert/embeddings_last_mean_fp32.parquet		1024	PENDING
 prott5_xl_uniref50	plm	dense_parquet	data/representations/sylphy_embeddings/models/rostlab_prot_t5_xl_uniref50/embeddings_last_mean_fp32.parquet		1024	PENDING
