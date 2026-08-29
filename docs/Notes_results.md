@@ -855,3 +855,501 @@ La elección depende del objetivo del sistema.
 Y la frase conceptual que guardaría:
 
 > **When annotation is incomplete, the choice of learning paradigm may matter less for recovering what is already known than for deciding what should be investigated next.**
+
+Claro bebé. Para tus notas, dejaría **RQ13** así:
+
+## RQ13 — PU generalization across redundancy and homology constraints
+
+RQ13 mostró que, incluso bajo aprendizaje positive–unlabeled, **la reducción de redundancia (`R`) domina claramente el generalization landscape**, mientras que la separación homológica (`S`) tiene un efecto bastante menor y más irregular.
+
+### Principales hallazgos
+
+* **Efecto de R90→R30 sobre U95 recovery**
+
+  * Δ mediana ≈ **−0.073**
+  * ~**96%** de los contrastes son negativos
+  * efecto absoluto mediano ≈ **0.073**
+
+* **Efecto de S90→S30**
+
+  * Δ mediana ≈ **−0.008**
+  * ~**72%** de los contrastes son negativos
+  * efecto absoluto mediano ≈ **0.012**
+
+Así, el efecto típico de `R` es aproximadamente **6 veces mayor** que el de `S`.
+
+> **PU recovery is primarily redundancy-sensitive rather than homology-separation-sensitive.**
+
+### La pérdida por R es progresiva
+
+Los cambios stepwise fueron aproximadamente:
+
+* R90→R70: **−0.026**
+* R70→R50: **−0.028**
+* R50→R30: **−0.018**
+
+No aparece un breakpoint universal. La mayoría de las trayectorias R muestran degradación monotónica o casi monotónica.
+
+Por tanto:
+
+> **Removing redundant sequence evidence progressively reduces PU positive recovery rather than producing a single catastrophic threshold transition.**
+
+### El efecto de S es pequeño y principalmente aparece en el régimen más estricto
+
+Stepwise:
+
+* S90→S70: ~0
+* S70→S50: pequeño efecto negativo
+* S50→S30: **~−0.009**
+
+Además, ~**81%** de las curvas S son nonmonotonic.
+
+Así, la separación homológica tiene un efecto mucho menos uniforme que la reducción de redundancia.
+
+### R domina casi todas las superficies PU
+
+En el análisis de dominance:
+
+* **~90%** de las superficies fueron `R-dominant`
+* ~10% balanced
+* prácticamente **ninguna S-dominant**
+* median dominance index ≈ **0.62**
+
+Esto confirma que:
+
+> **Redundancy is the dominant axis controlling PU generalization.**
+
+### Existe interacción R×S, pero no supera el efecto principal de R
+
+La interacción extrema mediana fue aproximadamente:
+
+$$
+I_{R\times S}\approx+0.027
+$$
+
+y fue positiva en ~90% de las superficies.
+
+Esto indica cierta **non-additivity / attenuation**: cuando R ya es muy estricto, hacer también S estricto suele añadir menos pérdida de la esperada bajo independencia.
+
+Pero la historia principal sigue siendo `R >> S`.
+
+### Los tres paradigmas PU comparten la misma geometría general
+
+Extreme R effect:
+
+* naive: ~**−0.083**
+* BaggingPU: ~**−0.066**
+* Elkan–Noto: ~**−0.083**
+
+Extreme S effect:
+
+* naive: ~**−0.008**
+* BaggingPU: ~**−0.007**
+* Elkan–Noto: ~**−0.007**
+
+Así, cambiar el paradigma PU no altera radicalmente la estructura del R×S landscape.
+
+### BaggingPU sigue siendo casi equivalente al naive en promedio
+
+Median gain U95 vs naive:
+
+$$
+\boxed{+0.001}
+$$
+
+y ~**76%** de las comparaciones están dentro de ±0.02.
+
+Por tanto, no hay una ventaja global grande de BaggingPU para known-positive recovery.
+
+### Pero BaggingPU se vuelve modestamente más favorable cuando R es estricto
+
+Gain vs naive por R:
+
+* R90: ~0
+* R70: ~0
+* R50: ~+0.003
+* **R30: ~+0.009**
+
+El cambio de gain R30−R90 es ~**+0.008**, positivo en ~75% de los contrastes.
+
+Esto sugiere:
+
+> **BaggingPU becomes modestly more useful as redundant sequence evidence is removed.**
+
+El efecto es real pero pequeño, por lo que no debe presentarse como una gran rescue effect.
+
+### S no aumenta de forma clara el beneficio de BaggingPU
+
+El cambio de gain S90→S30 es solo ~**+0.002**.
+
+Así, no hay evidencia fuerte de que BaggingPU sea especialmente útil para remote-homology generalization.
+
+### Elkan–Noto permanece prácticamente rank-equivalent al naive
+
+Para U95:
+
+* median gain vs naive ≈ **0**
+* ~**88%** practical ties
+* no cambio relevante del gain con R
+* no cambio relevante con S
+* prácticamente ninguna interacción del gain
+
+Esto refuerza RQ12: Elkan–Noto actúa principalmente como score correction y no como un cambio sustancial del ranking.
+
+### U99 vuelve a estar dominado por ties de Elkan–Noto
+
+Canonical U99 muestra una aparente ventaja de EN, pero strict U99 cambia completamente la interpretación.
+
+En todas las R/S cells, el U99 threshold de EN alcanza **1.0**, debido al clipping.
+
+Por tanto:
+
+> **Canonical U99 cannot be interpreted as evidence of improved resolved ranking for Elkan–Noto without the tie-aware correction.**
+
+### La reducción de R también reduce fuertemente el soporte positivo
+
+Al pasar R90→R30, el positive-test support cae aproximadamente dos tercios.
+
+Esto se asocia fuertemente con recovery:
+
+$$
+\rho(n_P,\mathrm{recovery})\approx0.90-0.93
+$$
+
+pero esta relación es descriptiva, porque R cambia simultáneamente soporte, composición, redundancia y topología homológica.
+
+## Take-home message
+
+> **Positive–unlabeled recovery is governed much more strongly by redundancy reduction than by train–test homology separation. Dedicated PU methods do not fundamentally alter this landscape: Elkan–Noto remains essentially equivalent to naive ranking, whereas BaggingPU shows only a modest increase in relative benefit when redundancy control becomes stringent.**
+
+Y la frase conceptual que guardaría:
+
+> **Label uncertainty does not erase the effect of sequence redundancy; even under PU learning, redundancy remains the dominant determinant of the generalization landscape.**
+
+Otra buena para el paper:
+
+> **Uncertainty-aware learning can modestly mitigate, but cannot replace, the information lost when redundant sequence evidence is removed.**
+
+## RQ14 — Effect of the unlabeled-universe definition
+
+RQ14 mostró que ampliar el universo unlabeled desde `U_explicit` hacia un background broad que incorpora `U_other_unresolved` modifica sustancialmente el problema PU, pero principalmente a través de la estructura del espacio de candidatos y no mediante una degradación fuerte del problema original `P_core vs U_explicit`.
+
+En la evaluación native, broad redujo consistentemente el positive recovery a U95, con medianas de aproximadamente **−0.054 para naive**, **−0.056 para BaggingPU** y **−0.047 para Elkan–Noto**. El efecto fue negativo en ~95% de las comparaciones. Esta pérdida persistió al evaluar los mismos positivos bajo las respectivas distribuciones U nativas, descartando que se explicara únicamente por cambios en qué proteínas positivas quedaron asignadas al outer test.
+
+Sin embargo, el análisis common-reference cambió sustancialmente la interpretación. Al evaluar exactamente los mismos `P_core` contra exactamente los mismos `U_explicit`, la penalización broad disminuyó a aproximadamente **−0.009 U95 para naive**, **0 para BaggingPU** y **−0.009 para Elkan–Noto**. Así, aproximadamente 80–100% de la pérdida native desapareció al controlar completamente las entidades utilizadas como referencia. Los percentiles de los positivos sobre el mismo `U_explicit` también permanecieron prácticamente invariantes.
+
+Por tanto, la menor recuperación observada bajo broad no refleja principalmente una pérdida de capacidad para resolver el problema original `P_core vs U_explicit`. En cambio, broad incorpora una población adicional de proteínas unresolved que compite fuertemente en el extremo superior de U.
+
+`U_other_unresolved` representó en mediana aproximadamente **28.8% del broad-U**, pero constituyó ~**53% del top-5% con naive**, ~**58% con BaggingPU** y ~**53% con Elkan–Noto**, correspondientes a enriquecimientos de aproximadamente **1.90×**, **2.07×** y **1.90×**, respectivamente. Además, ~13–16% de estas proteínas superaron el percentil 95 de `U_explicit`. El enriquecimiento relativo aumentó hacia regímenes de redundancy reduction más estrictos, alcanzando aproximadamente **2.08× para naive** y **2.29× para BaggingPU en R30**.
+
+Ampliar U también reorganizó materialmente la priorización incluso entre los mismos `U_explicit`. La correlación de rankings conservative–broad fue ~**0.84 para naive/Elkan–Noto** y ~**0.93 para BaggingPU**, pero el Jaccard del top-1% fue solo ~**0.46**, ~**0.53** y ~**0.48**, respectivamente. Por tanto, una parte importante de las proteínas seleccionadas para follow-up depende de cómo se define el universo de incertidumbre.
+
+BaggingPU mostró una estabilidad relativamente mayor del ranking de `U_explicit` y prácticamente ninguna pérdida common-reference, mientras produjo el mayor enriquecimiento de `U_other_unresolved` entre los candidatos superiores. Sin embargo, ampliar U no aumentó de forma importante la ventaja global de los métodos PU dedicados sobre naive P-vs-U para recuperación de positivos conocidos.
+
+Elkan–Noto mantuvo los problemas de clipping y ties previamente identificados. Su comportamiento canonical U99 no debe interpretarse como una mejora de ranking sin considerar el contraste strict-U99.
+
+### Take-home message
+
+> **Expanding the unlabeled universe does not substantially impair recognition of the original positive-versus-explicit-U problem. Instead, it reveals an additional unresolved protein population that is strongly enriched in the candidate-like tail and materially changes which proteins would be prioritized for discovery.**
+
+La frase conceptual que guardaría para el paper es:
+
+> **In positive–unlabeled protein learning, the unknown class is not a passive background: its biological scope determines which alternatives compete with known positives and, consequently, which unannotated proteins emerge as candidates for experimental investigation.**
+
+## RQ15 — Representation × positive–unlabeled learning paradigm
+
+RQ15 mostró que la interacción entre representación y paradigma PU depende fuertemente del tipo de representación y, de manera crucial, afecta de forma diferente el reconocimiento de positivos conocidos y la priorización de proteínas unlabeled.
+
+Para known-positive recovery, BaggingPU mostró una ganancia sustancial únicamente con one-hot. El gain mediano `BaggingPU−naive` en U95 fue aproximadamente **+0.093** para one-hot, con ~83% de los contrastes positivos. En cambio, la ganancia fue esencialmente nula para Roxy (**~0.000**), ESM2-T6 (**~−0.003**) y ESM2-T30 (**~0.000**), con 88–95% de las comparaciones dentro de la zona de practical tie. Elkan–Noto tampoco produjo una ganancia mediana relevante en ninguna representación.
+
+Por tanto, la dependencia del recovery respecto del paradigma PU no disminuye de forma monotónica con la calidad de representación. En cambio, **one-hot constituye un régimen específicamente sensible al paradigma PU**, mientras Roxy y ambas representaciones ESM2 muestran poca dependencia del learner PU para recuperación de positivos conocidos.
+
+La representación continuó siendo el determinante dominante del recovery. La ganancia `T30−T6` permaneció cercana a **+0.07–0.08 U95** bajo naive, BaggingPU y Elkan–Noto, mientras `T30−Roxy` fue aproximadamente **+0.21** bajo los tres paradigmas. Así, cambiar el paradigma PU no modifica sustancialmente la ventaja proporcionada por una representación pretrained fuerte.
+
+El spread entre paradigmas fue aproximadamente **0.118 U95 para one-hot**, pero solo ~**0.005–0.007** para Roxy, T6 y T30. BaggingPU redujo el representation spread global principalmente mediante su mejora de one-hot, pero no eliminó la gran ventaja de las representaciones ESM2.
+
+La interacción con R y S fue pequeña para las representaciones pretrained. La diferencia de PU gain `T30−T6` aumentó modestamente hacia redundancy regimes estrictos, desde prácticamente cero en R90 hasta ~**+0.009** en R30, pero permaneció pequeña en términos absolutos. No apareció una tendencia clara con S. Por tanto, no existe evidencia de una fuerte interacción adicional `representation × PU paradigm × R/S` para known-positive recovery.
+
+La historia cambió al analizar candidate prioritization. Aunque BaggingPU prácticamente no mejoró U95 recovery con T30, produjo un ranking del universo U sustancialmente diferente del naive. La correlación naive–BaggingPU disminuyó desde ~**0.91 con T6** hasta ~**0.81 con T30**, y el Jaccard tie-aware del top-5% cayó desde ~**0.70 hasta ~0.53**. En comparaciones pareadas, `T30−T6` redujo el Spearman en aproximadamente **−0.083** y el top-5% Jaccard en ~**−0.136**, con reducción del top-5% overlap en todas las 64 comparaciones.
+
+Esta divergencia no parece originarse en inestabilidad de BaggingPU. La variabilidad mediana de scores entre bags disminuyó desde ~**0.015 con T6** hasta ~**0.0068 con T30**, y T30 mostró menor median bag variability en ~**98%** de los contrastes pareados. Por tanto, T30 produce predicciones BaggingPU internamente más estables al mismo tiempo que genera una repriorización más distinta respecto del naive.
+
+El análisis broad-U reforzó esta separación entre recognition y discovery. BaggingPU aumentó el enriquecimiento de `U_other_unresolved` en el top-5% respecto del naive en aproximadamente **+0.206 con T30**, frente a ~**+0.072 con T6** y ~**+0.014 con Roxy**. One-hot mostró el mayor efecto (~**+0.245**), aunque también presentó la mayor variabilidad interna entre bags. Así, la interacción representación–PU en candidate discovery es real pero no monotónica con representation quality.
+
+Elkan–Noto permaneció prácticamente rank-equivalent al naive bajo todas las representaciones. Los Spearman fueron esencialmente 1 y el top-5% tie-aware overlap fue completo. Las diferencias observadas en top-1% para Roxy y one-hot se explicaron por expansión del candidate pool debido a clipping/ties, un efecto que prácticamente desapareció con T30.
+
+### Take-home message
+
+> **Protein representation and PU learning are largely separable for recovery of known positives once informative feature spaces are available, with one-hot forming a distinct PU-sensitive regime. In contrast, representation and learning paradigm remain strongly coupled in the discovery space: BaggingPU can produce stable but substantially different candidate rankings even when it provides essentially no improvement in known-positive recovery.**
+
+La frase conceptual que guardaría para el paper es:
+
+> **A strong protein representation can reduce the need for uncertainty-aware learning to recover what is already known without eliminating its influence on what the model chooses to investigate next.**
+
+De forma compacta, RQ15 identifica un régimen:
+
+> **recovery-substitutive, discovery-coupled.**
+
+## RQ16 — Common-test sensitivity of redundancy and homology effects
+
+RQ16 mostró que los efectos de redundancy reduction (`R`) y homology separation (`S`) presentan sensibilidades muy diferentes a la composición del outer test.
+
+El análisis common-test fue validado recalculando MCC, AP-skill y macro-F1 directamente desde los 2,240 prediction files, reproduciendo los resultados Stage12A con diferencias numéricas únicamente al nivel de precisión de máquina. Las intersecciones pairwise conservaron aproximadamente **28% del test para contrastes R** y **30% para contrastes S**, proporcionando una base razonable para evaluar los mismos proteins bajo dos condiciones experimentales.
+
+### Homology-separation effects are largely preserved on shared proteins
+
+Para `S90→S30`, la pérdida mediana global disminuyó solo moderadamente desde aproximadamente **−0.017 MCC en los native tests** hasta **−0.012 MCC en los common tests**. AP-skill mostró la misma conclusión, pasando de aproximadamente **−0.013 a −0.009**. La dirección del efecto MCC coincidió en ~73% de los contrastes extremos.
+
+Más importante aún, la dependencia del efecto S respecto de R se preservó claramente cuando se evaluaron las mismas proteínas:
+
+```text
+             Native ΔMCC      Common-test ΔMCC
+R90             −0.047             −0.037
+R70             −0.031             −0.020
+R50             −0.006             −0.004
+R30              ~0                 ~0
+```
+
+Por tanto, la desaparición progresiva del penalty de homology separation cuando redundancy control ya es estricto **no puede explicarse simplemente por cambios en qué proteínas entran al test set**.
+
+A nivel de tarea, global easy mantuvo prácticamente intacto su efecto S, mientras global mixed, multiclass y endolysin conservaron penalties negativos algo atenuados. Global hard permaneció prácticamente insensible a S. Depolymerase también mostró un pequeño common-test penalty. VAL no puede interpretarse de forma fuerte debido al reducido número de positivos compartidos.
+
+### Redundancy effects are much more test-composition-sensitive
+
+El contraste `R90→R30` cambió de aproximadamente:
+
+$$
+\Delta MCC_{\mathrm{native}}\approx-0.070
+$$
+
+a:
+
+$$
+\Delta MCC_{\mathrm{common}}\approx-0.012.
+$$
+
+A través de todos los contrastes R, la magnitud absoluta mediana disminuyó aproximadamente de **0.043 a 0.018 MCC**, el sign agreement fue ~59%, y en ~72% de las comparaciones el common-test effect fue menor que el native effect.
+
+Así, una fracción importante del efecto R del benchmark no refleja simplemente que exactamente las mismas proteínas se vuelvan más difíciles de predecir. Redundancy reduction modifica el conjunto de evidencia disponible y la población biológica que sobrevive al control de redundancia y alcanza la evaluación.
+
+Este resultado no invalida la dominancia de R observada previamente. En cambio, clarifica su significado:
+
+> **R is the dominant driver of benchmark-wide predictive change because it restructures both the available evidence and the evaluated sequence population, whereas S primarily modifies the train–test generalization relationship within a fixed biological universe.**
+
+Endolysin permaneció como el task más claramente redundancy-sensitive incluso bajo common-test evaluation, aunque su pérdida `R90→R30` disminuyó desde ~**−0.143** hasta ~**−0.032 MCC**. Global easy y global mixed también conservaron pequeñas pérdidas negativas.
+
+En depolymerase, la ligera mejora native observada al reducir R desapareció bajo common-test evaluation y se transformó en un efecto cercano a cero o ligeramente negativo. Por tanto, no existe evidencia robusta de que redundancy reduction mejore intrínsecamente la predicción de depolymerase.
+
+### Exact four-level and four-corner intersections are too restrictive for strong inference
+
+Las intersecciones comunes a los cuatro niveles retuvieron únicamente ~**2–3% del outer test**, y el four-corner `R90S90/R90S30/R30S90/R30S30` retuvo una mediana de apenas ~**74 proteínas**. En algunos tasks, especialmente multiclass, DPO y VAL, el soporte por clase quedó extremadamente bajo o no permitió estimar métricas binarias.
+
+El extreme R×S interaction pasó de una mediana native de ~**+0.051 MCC** a aproximadamente cero en el four-corner common set. Sin embargo, debido a la severa reducción de soporte, este análisis se interpreta como un stress test inconcluso y no como evidencia de que la interacción native sea un artefacto.
+
+La evidencia common-test más informativa para R×S proviene de los contrastes pairwise: el penalty S permanece grande en R90 y desaparece progresivamente hacia R30 sobre las mismas proteínas. Así, **la estructura de atenuación que define la interacción R×S sobrevive al control de test composition**, aunque la interacción extrema no puede ser estimada de forma fiable sobre una única población común a los cuatro corners.
+
+### Take-home message
+
+> **Homology-separated evaluation imposes a generalization penalty that largely persists when the evaluated proteins are held fixed. Redundancy reduction has a different character: much of its benchmark-wide effect arises because it restructures the available evidence and the biological population being evaluated, although task-specific same-protein effects remain, particularly for endolysin.**
+
+La frase conceptual que guardaría para el paper es:
+
+> **Redundancy control and homology separation affect generalization through different mechanisms: the former reshapes the evidence and evaluation population, whereas the latter primarily changes how far models must generalize within that population.**
+
+Y para conectar directamente con RQ4:
+
+> **The attenuation of homology-separation penalties under stringent redundancy control persists on shared test proteins, supporting a genuine dependence between the two evaluation axes beyond differences in test-set composition.**
+
+## RQ17 — Paired finite-test bootstrap uncertainty
+
+RQ17 evaluó la incertidumbre asociada al tamaño finito de los outer test sets mediante 1,000 bootstrap replicates estratificados, manteniendo congeladas todas las predicciones y utilizando paired resampling cuando los modelos fueron evaluados sobre las mismas entidades. Por tanto, los intervalos obtenidos cuantifican finite-test uncertainty condicional a los modelos ajustados y no training-seed variability.
+
+### Representation effects are substantially more resolved than downstream-algorithm effects
+
+La ventaja de ESM2-T30 sobre Roxy fue extremadamente robusta. El gain mediano fue aproximadamente **+0.214 MCC**, y ~**95% de los 140 contrastes** mostraron un 95% CI completamente por encima de cero. La ventaja fue directionally resolved en prácticamente todos los tasks, con cierta reducción de precisión únicamente en VAL.
+
+El contraste T30−T6 fue menor y claramente task-dependent. Su gain mediano global fue aproximadamente **+0.069 MCC**, con ~59% de los contrastes completamente positivos. Sin embargo, global easy, global mixed y endolysin mostraron resolución positiva en **100%** de sus contrastes, mientras global hard presentó un gain mediano de solo ~**+0.006** y ~95% de los intervalos cruzaron cero. Este resultado refuerza la interpretación de representation saturation previamente observada para `global_hard`.
+
+En contraste, las diferencias entre learners competitivos fueron mucho menos resueltas. `MLP−XGB` mostró un gain mediano de solo ~**+0.006 MCC**, con ~**89%** de los intervalos cruzando cero. `MLP−LR` mostró una señal mayor (~**+0.035 MCC**) pero task-dependent. Así, las diferencias entre representaciones fuertes están mucho mejor respaldadas frente a finite-test uncertainty que las diferencias entre clasificadores del upper tier.
+
+### Finite-test uncertainty reproduces the attenuation of the S penalty under stringent R
+
+Sobre las mismas proteínas compartidas, el contraste `S30−S90` presentó una pérdida mediana de aproximadamente **−0.039 MCC en R90**, **−0.020 en R70**, **−0.007 en R50** y aproximadamente **0 en R30**.
+
+La proporción de contrastes cuyo 95% CI quedó completamente por debajo de cero disminuyó de aproximadamente:
+
+$$
+48\% \rightarrow 24\% \rightarrow 5\% \rightarrow 2\%
+$$
+
+para:
+
+$$
+R90 \rightarrow R70 \rightarrow R50 \rightarrow R30.
+$$
+
+Por tanto, la atenuación previamente observada no se limita a una reducción de los point estimates. A medida que redundancy control se hace más estricto, también desaparece progresivamente la resolución direccional del efecto de homology separation bajo finite-test resampling.
+
+El common-test R effect mostró una historia diferente. Para `R30−R90` con T30, ~**89%** de los intervalos MCC cruzaron cero y solo ~6% fueron directionally negativos. Esto refuerza la conclusión de RQ16 de que la gran magnitud del native R effect refleja principalmente la reestructuración de evidencia y población inducida por redundancy control, mientras el same-entity component es mucho menor y frecuentemente no resoluble frente a finite-test uncertainty.
+
+### PU uncertainty is strongly representation-dependent
+
+BaggingPU mostró un recovery advantage robusto principalmente bajo one-hot. El gain mediano `BaggingPU−naive` fue ~**+0.093 U95**, con ~**59%** de los contrastes mostrando CIs completamente positivos. Para Roxy, T6 y T30, los gains medianos fueron cercanos a cero y la mayoría de los intervalos incluyeron cero.
+
+En cambio, la ventaja de ESM2-T30 sobre ESM2-T6 fue extraordinariamente robusta bajo todos los paradigmas PU. Los gains medianos fueron ~**+0.072–0.076 U95**, y los **192 contrastes evaluados** mostraron intervalos completamente por encima de cero. Así, la representación T30 proporciona una mejora en known-positive recovery que es robusta frente a finite-test uncertainty y esencialmente independiente del paradigma PU utilizado.
+
+Elkan–Noto mantuvo un comportamiento prácticamente indistinguible del naive para U95 a nivel agregado. Sus resultados continúan interpretándose bajo los problemas de clipping y ties documentados previamente y no proporcionan evidencia de una ventaja general de ranking.
+
+### VAL uncertainty confirms an evidence-limited regime
+
+VAL presentó intervalos mucho más amplios que los tasks con mayor soporte positivo. Con solo **14–26 positivos** en los outer-test corners analizados, los MCC bootstrap CI widths fueron aproximadamente **0.20–0.33**, mientras los intervalos de recall alcanzaron widths de **0.35–0.50**.
+
+El número de positivos mostró una correlación negativa fuerte con la anchura del MCC CI:
+
+$$
+\rho \approx -0.71.
+$$
+
+Por tanto, la escasez de evidencia en VAL limita no solo el aprendizaje sino también la precisión con que la performance puede ser estimada.
+
+### Take-home message
+
+> **Finite-test uncertainty reinforces the main hierarchy of the benchmark: representation effects, particularly T30 over simpler feature spaces, are substantially more robust than differences among competitive downstream learners. The homology-separation penalty is most clearly resolved when redundancy remains high and loses both magnitude and directional resolution as redundancy control becomes stringent. Dedicated PU learning provides a representation-specific recovery advantage, whereas the T30 representation advantage remains robust across PU paradigms. Low-support tasks such as VAL remain fundamentally uncertainty-limited.**
+
+## RQ18 — Computational burden versus predictive performance
+
+RQ18 mostró que **predictive performance y computational burden no siguen la misma jerarquía**, y que una representación pretrained fuerte puede permitir modelos downstream extremadamente competitivos sin requerir necesariamente los learners más costosos.
+
+El resultado práctico más claro apareció con **ESM2-T30 + KNN**, que alcanzó una MCC mediana de aproximadamente **0.914** con un downstream runtime mediano de solo **~1.8 s**. Esta combinación quedó dentro de **0.02 MCC del mejor modelo de cada `task × R × S` cell en ~79% de los casos** y perteneció al performance/runtime Pareto frontier en ~**87%** de las celdas. En contraste, `T30 + MLP` obtuvo una MCC mediana ligeramente superior (~**0.917**) y fue near-best en ~**90%** de las celdas, pero requirió ~**37 s** medianos, aproximadamente **21× más runtime** que KNN. `T30 + XGB` mostró una MCC mediana de ~**0.911**, con ~76% near-best, pero un runtime mediano de ~**60 s**, aproximadamente **33× el costo downstream de T30+KNN**.
+
+Por tanto, el principal trade-off práctico no fue `T30 + LR`, como se había anticipado inicialmente, sino **T30 + KNN**. LR siguió siendo relativamente liviano frente a MLP/XGB, pero quedó within 0.02 MCC del cell-best en solo ~**26%** de las celdas. Su utilidad fue más clara frente a RF: dentro de T30, LR estuvo within 0.02 MCC de RF en ~**92%** de las comparaciones y fue simultáneamente near-and-faster en ~**80%**. En cambio, frente a MLP y XGB el pequeño costo de LR estuvo acompañado con mayor frecuencia por una pérdida predictiva apreciable.
+
+### KNN provides a strong Pareto solution but shifts cost toward inference
+
+El favorable downstream runtime de KNN debe interpretarse junto con su prediction-time burden. Para T30, el prediction time mediano fue aproximadamente:
+
+```text
+KNN   ~0.506 s
+RF    ~0.102 s
+LR    ~0.093 s
+MLP   ~0.060 s
+XGB   ~0.036 s
+```
+
+Así, KNN prácticamente elimina training complexity pero paga un costo de inferencia mayor. Para los tamaños evaluados aquí sigue siendo un trade-off excelente, pero no debe extrapolarse automáticamente a escenarios de deployment con millones de predicciones.
+
+### One-hot + MLP is computationally dominated
+
+El régimen más costoso del benchmark fue claramente **one-hot + MLP**. Su runtime mediano fue aproximadamente **938 s**, frente a ~37 s para T30+MLP, y algunas ejecuciones superaron los **3,500 s**. A pesar de ello, su MCC mediana fue solo ~**0.545**, muy inferior al ~0.917 obtenido con T30+MLP.
+
+One-hot+MLP presentó:
+
+```text
+Pareto rate     = 0%
+Near-best rate  = 0%
+```
+
+por lo que constituye un régimen claramente dominated: elevado costo computacional sin una compensación predictiva comparable.
+
+### T30 improves prediction without requiring a proportional increase in downstream compute
+
+El aumento de T6 a T30 produjo mejoras importantes de MCC, pero el downstream-runtime premium dependió fuertemente del learner:
+
+```text
+Learner    ΔMCC T30−T6    Runtime T30/T6
+KNN          +0.073            1.19×
+LR           +0.151            0.94×
+MLP          +0.066            1.14×
+RF           +0.098            1.40×
+XGB          +0.066            1.95×
+```
+
+Por tanto, una representación pretrained más fuerte **no implica automáticamente un gran incremento del costo downstream**. Para KNN y MLP, T30 produjo ganancias claras con solo ~14–19% de runtime adicional, mientras LR incluso presentó un runtime mediano ligeramente inferior. XGB fue la principal excepción, con casi el doble de downstream runtime.
+
+### The main T30 computational premium lies in representation generation
+
+La generación de embeddings mostró una historia diferente. T6 y T30 fueron extraídos sobre exactamente **434,768 secuencias**, utilizando el mismo workflow, CUDA y precisión FP32:
+
+```text
+ESM2-T6
+dimensions       320
+runtime          ~5,147 s  (~1.43 h)
+seconds / 10k    ~118
+
+ESM2-T30
+dimensions       640
+runtime          ~25,460 s (~7.07 h)
+seconds / 10k    ~586
+```
+
+Así:
+
+$$
+\frac{\mathrm{runtime}_{T30}}
+     {\mathrm{runtime}_{T6}}
+\approx
+\boxed{4.95}
+$$
+
+El principal premium computacional de T30 ocurre entonces **durante la generación de la representación**, no durante el ajuste del classifier downstream. Este costo es además amortizable, porque los embeddings pueden reutilizarse entre tasks, condiciones R/S y learners.
+
+### R changes computational scale; S does not
+
+El runtime mediano disminuyó progresivamente al hacer R más estricto:
+
+```text
+R90   ~16.4 s
+R70   ~13.6 s
+R50   ~10.1 s
+R30   ~ 8.4 s
+```
+
+En comparaciones pareadas:
+
+$$
+\mathrm{median}
+\left(
+\frac{runtime_{R30}}{runtime_{R90}}
+\right)
+\approx
+0.42.
+$$
+
+Así, R30 utiliza aproximadamente **42% del runtime de R90**, consistente con la reducción y reestructuración del universo de entrenamiento.
+
+En cambio:
+
+$$
+\mathrm{median}
+\left(
+\frac{runtime_{S30}}{runtime_{S90}}
+\right)
+\approx
+0.995,
+$$
+
+por lo que homology separation prácticamente no cambia el workload computacional. Esto refuerza la distinción conceptual de RQ16: **R modifica tanto la estructura estadística como la escala computacional del problema, mientras S modifica principalmente la dificultad de generalización**.
+
+El runtime también mostró fuerte dependencia del training-set size para KNN, RF y MLP, con median Spearman aproximados de **0.99, 0.94 y 0.85**, respectivamente. La asociación fue menor para XGB (~0.46) y LR (~0.39).
+
+### Memory measurements should not support model-level claims
+
+Aunque se registraron `process_peak_rss_kb_start/end`, el `peak_delta` mediano fue cero para prácticamente todas las familias y los mismos high-water RSS values se repitieron entre diferentes learners. Estos campos reflejan un **process-level high-water mark**, no una medición limpia de peak memory incremental por modelo.
+
+Por tanto, RQ18 **no debe utilizarse para establecer una jerarquía de memory consumption entre modelos**.
+
+### PU computational cost is not estimable
+
+Los 768 experimentos PU conservaron `manifest.json` y `pu_diagnostics.tsv`, pero ninguno de estos artifacts contiene un wall-time utilizable y `runtime.json` está ausente en las 768 ejecuciones. En consecuencia:
+
+> **PU compute overhead is not estimable from the retained benchmark artifacts.**
+
+No puede cuantificarse de forma defendible el runtime multiplier de BaggingPU o Elkan–Noto frente a naive, ni el costo broad-versus-conservative. Esto corresponde a una limitación de instrumentation y no afecta los resultados predictivos PU obtenidos en RQ12–RQ17.
+
+### Take-home message
+
+> **Strong protein representations can substantially reduce the need for expensive downstream modeling. ESM2-T30 combined with KNN provides the strongest performance–runtime Pareto trade-off in the executed benchmark, approaching the predictive performance of MLP and XGB at a fraction of their downstream computational burden. The principal computational premium of scaling the pretrained model from T6 to T30 is paid once during representation generation rather than repeatedly during downstream model fitting.**
+
+La frase conceptual que guardaría para el paper es:
+
+> **Representation quality and downstream model complexity are not interchangeable computational burdens: stronger pretrained representations can shift predictive complexity upstream, enabling lightweight downstream models while concentrating most additional computational cost in an amortizable representation-generation step.**
