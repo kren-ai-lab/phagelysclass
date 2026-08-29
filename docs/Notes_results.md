@@ -195,3 +195,663 @@ Finalmente, T30 obtuvo el mejor rank de representación en aproximadamente **93%
 Y la frase conceptual que yo guardaría para el paper es:
 
 > **Better protein representations do not merely improve predictive performance; they flatten the generalization landscape.**
+
+## RQ7 — Effect of increased ESM2 capacity on generalization
+
+RQ7 mostró que aumentar la capacidad dentro de la familia ESM2, desde **T6 (~8M)** hasta **T30 (~150M)**, produce una mejora clara pero **fuertemente dependiente del régimen**. En las 560 comparaciones pareadas, la ganancia mediana fue de aproximadamente:
+
+$$
+\boxed{\Delta MCC_{T30-T6}\approx +0.077}
+$$
+
+T30 superó numéricamente a T6 en ~**93%** de los benchmark cells, fue mejor por más de `0.01 MCC` en ~**83%**, y mostró una mejora superior a `0.05 MCC` en ~**62%**. Los casos donde T6 fue mejor por más de `0.01 MCC` fueron muy raros (~**2%**) y no formaron un régimen coherente.
+
+La ganancia de capacidad fue claramente **task-dependent**. Los mayores beneficios aparecieron en:
+
+```text
+Endolysin      ~+0.134 MCC
+Global easy    ~+0.113
+Global mixed   ~+0.104
+```
+
+mientras que multiclass y depolymerase mostraron mejoras moderadas y `global_hard` quedó prácticamente saturado:
+
+```text
+Global hard    ~+0.008 MCC
+```
+
+Así, RQ7 separó claramente **capacity-sensitive regimes** de tareas donde **T6 ya es prácticamente suficiente**.
+
+La ventaja de T30 aumentó al hacer la evaluación más estricta. Con homology separation:
+
+```text
+S90   ~+0.069
+S70   ~+0.075
+S50   ~+0.078
+S30   ~+0.091 MCC
+```
+
+y entre los corners extremos:
+
+```text
+R90_S90   ~+0.055 MCC
+R30_S30   ~+0.098 MCC
+```
+
+Por tanto, **el valor adicional de la representación de mayor capacidad crece cuando la generalización requerida se vuelve más remota y menos apoyada por redundancia local**.
+
+Con redundancy reduction también aumentó la ventaja de T30 desde R90 hacia R50, antes de alcanzar aproximadamente un plateau en R50–R30. Esto indica que la capacidad adicional se vuelve más valiosa a medida que se elimina soporte redundante, aunque el efecto no sigue una progresión estrictamente monotónica.
+
+T30 también mejoró de forma importante el **worst-case generalization**. La elevación mediana del peor MCC de cada superficie 4×4 fue aproximadamente:
+
+$$
+\boxed{+0.109\ MCC}
+$$
+
+y las superficies T30 fueron además ligeramente más planas que las de T6. Esto indica que la capacidad adicional no solo eleva la performance promedio, sino que **sube el piso de generalización en condiciones adversas**.
+
+T30 tendió también a ser más robusto frente a R y S, aunque este efecto fue menos universal que la ganancia directa de performance. T30 mostró menor sensibilidad absoluta a R en ~**64%** de los casos y menor sensibilidad a S en ~**65%**. Por tanto, la evidencia principal de RQ7 es el aumento de performance y worst-case robustness, no una reducción uniforme de sensibilidad.
+
+Un resultado clave fue la fuerte relación entre performance basal de T6 y beneficio de T30:
+
+$$
+\boxed{\rho\approx -0.82}
+$$
+
+Cuanto más cerca estaba T6 de saturar una tarea, menor era la mejora producida por T30. Esto fue especialmente evidente en `global_hard`, mientras que endolysin, global easy y global mixed mostraron todavía gran headroom y grandes ganancias de capacidad. La interpretación prudente es que **capacity gains exhibit strong diminishing returns as the smaller PLM approaches task saturation**.
+
+En las condiciones con headroom suficiente, T30 recuperó en mediana aproximadamente **42% del margen de MCC disponible**, alcanzando valores cercanos a 57–59% en endolysin y las tareas global easy/mixed.
+
+Las métricas alternativas confirmaron la misma historia. AP-skill mostró una ganancia mediana cercana a **+0.063**, multiclass macro-F1 aproximadamente **+0.043**, y las ganancias entre métricas estuvieron fuertemente correlacionadas. Por tanto, el efecto de capacidad no depende exclusivamente de MCC.
+
+### Regímenes identificados
+
+**Capacity-sensitive:** global easy, global mixed, endolysin.
+T30 aporta mejoras grandes y consistentes.
+
+**Moderately capacity-sensitive:** multiclass y depolymerase.
+T30 generalmente gana, pero el beneficio es menor.
+
+**Capacity-saturated:** global hard.
+T6 ya alcanza performance muy alta y T30 aporta poco.
+
+**Evidence-limited:** VAL.
+Las ganancias pueden ser grandes, pero deben interpretarse con cautela por el bajo soporte.
+
+### Take-home message
+
+> **Increasing ESM2 capacity from T6 to T30 provides substantial additional functional-generalization value across most benchmark regimes, but the benefit is not uniform. Gains are largest where the smaller representation retains predictive headroom and where evaluation becomes more stringent, while highly separable tasks approach saturation with T6 and show sharply diminishing returns.**
+
+Y la frase conceptual que guardaría para el paper es:
+
+> **Larger pretrained representations are most valuable where generalization remains representation-limited; once the task approaches saturation, additional PLM capacity yields sharply diminishing returns.**
+
+## RQ8 — Effect of downstream algorithm choice and robustness
+
+RQ8 mostró que el **clasificador downstream sí afecta la performance**, pero su importancia es claramente menor que la de la representación y además depende fuertemente del feature space utilizado.
+
+A nivel global, MLP presentó la mayor MCC mediana (~**0.817**), seguido de XGB (~0.796), KNN (~0.784), RF (~0.742) y LR (~0.717). Sin embargo, las diferencias entre los tres mejores algoritmos fueron pequeñas en comparaciones pareadas: `MLP−KNN ≈ +0.007 MCC`, `MLP−XGB ≈ +0.006` y `XGB−KNN ≈ 0`. Por tanto, **MLP, XGB y KNN forman un upper tier competitivo**, sin evidencia de un algoritmo universalmente superior.
+
+El comportamiento del algoritmo fue fuertemente **representation-dependent**. Con Roxy, XGB fue claramente competitivo; con one-hot, KNN funcionó mucho mejor que RF; con T6, MLP/XGB/KNN quedaron próximos; y con T30 prácticamente todos los clasificadores convergieron hacia performances altas. Por tanto:
+
+> **there is no representation-independent learner hierarchy.**
+
+Uno de los hallazgos más fuertes fue que la **importancia del algoritmo disminuye drásticamente a medida que mejora la representación**. El rango mediano entre el mejor y peor algoritmo fue aproximadamente:
+
+```text
+One-hot    ~0.306 MCC
+Roxy       ~0.236
+ESM2-T6    ~0.115
+ESM2-T30   ~0.051
+```
+
+Así, una representación fuerte reduce de forma muy marcada la dependencia del classifier downstream. Esto indica que **better representations absorb part of the predictive burden that otherwise falls on the learning algorithm**.
+
+LR ilustró especialmente bien este fenómeno. Frente a Roxy, modelos no lineales podían mejorar más de `+0.20 MCC` respecto de LR; con T30, esas diferencias se redujeron típicamente a solo ~`+0.02–0.04 MCC`. Esto muestra que un decision boundary simple puede volverse bastante competitivo cuando el embedding ya separa bien el problema.
+
+En el régimen más estricto `R30_S30`, MLP mantuvo la mejor performance agregada (~**0.786 MCC**), seguido de XGB y KNN. MLP también mostró el mejor **worst-case MCC** a través de las superficies completas R×S, por lo que aparece como una opción fuerte en términos de performance absoluta y robustez.
+
+Sin embargo, el algoritmo con menor degradación frente a R o S no fue necesariamente el de mejor performance. LR mostró las menores sensibilidades absolutas a `R90→R30` y `S90→S30`, pero partiendo desde un nivel de performance inferior. Por tanto:
+
+> **absolute predictive quality and robustness to evaluation perturbations are distinct properties.**
+
+Dentro de T30, MLP combinó performance alta con muy buena robustez a R y S, lo que lo vuelve una opción particularmente fuerte dentro del embedding más informativo.
+
+El ganador retrospectivo también cambió con frecuencia a través del landscape. En ~**64%** de las superficies `task × representation`, el algoritmo ganador cambió entre `R90_S90` y `R30_S30`. Sin embargo, T30 mostró bastante más estabilidad entre corners extremos que Roxy o T6. Esto indica que la identidad del “mejor algoritmo” puede ser sensible al evaluation regime, especialmente cuando las representaciones son más débiles.
+
+El resultado conceptual más fuerte de RQ8 fue la comparación directa entre **representation spread** y **algorithm spread**. A través de todos los `task × R × S` conditions:
+
+```text
+median algorithm spread        ~0.176 MCC
+median representation spread   ~0.423 MCC
+```
+
+con un ratio mediano cercano a:
+
+$$
+\boxed{2.8\times}
+$$
+
+y la representación produjo un spread mayor que el algoritmo en **100% de las condiciones**.
+
+Por tanto, la elección de representación fue consistentemente mucho más importante que la elección del clasificador.
+
+AP-skill y multiclass macro-F1 reprodujeron la misma historia: las diferencias entre MLP, XGB y KNN fueron pequeñas, mientras RF y LR mostraron mayor dependencia del tipo de representación.
+
+### Take-home message
+
+> **Downstream learner choice matters, but its effect is strongly representation-dependent and substantially smaller than the effect of representation itself. MLP, XGB, and KNN form a broadly competitive upper tier, while stronger protein representations sharply reduce performance differences among classifiers. Across all benchmark regimes, choosing how proteins are represented is more consequential than choosing the downstream learner.**
+
+Y la frase conceptual que guardaría para el paper:
+
+> **A strong representation reduces the burden on the downstream learner; what the model sees matters substantially more than which classifier partitions the resulting feature space.**
+
+## RQ9 — Functional generalization regimes across biological tasks
+
+RQ9 mostró que **no existe un único régimen de generalización para protein-function prediction**. Cada formulación biológica responde de forma distinta a redundancy control, homology separation, representation quality, PLM capacity, classifier choice y evidencia disponible.
+
+El hallazgo más claro fue que **global easy y global mixed ocupan prácticamente el mismo régimen**. Sus fingerprints fueron muy similares en MCC, sensibilidad a R y S, dependencia de representación, T30−T6, algorithm spread y worst-case performance. Esto confirma que agregar el background lysis-adjacent al broad background no cambia sustancialmente la estructura del problema predictivo.
+
+En contraste, **global hard forma un régimen completamente distinto**. Presenta MCC alto (~0.90), worst-case elevado (~0.85), baja sensibilidad a R y S, poca dependencia de representación adicional y un gain T30−T6 casi nulo (~+0.008 MCC). Por tanto, representa un régimen:
+
+> **high-floor, protocol-robust and largely representation-saturated.**
+
+Esto demuestra que la definición del background negativo no solo altera la performance absoluta, sino que puede cambiar completamente **qué limita la generalización**.
+
+### Endolysin: redundancy- and representation-limited
+
+Endolysin mostró uno de los landscapes más dependientes de decisiones upstream:
+
+* `|R| ≈ 0.143 MCC`;
+* `T30−T6 ≈ +0.134`;
+* `T30−one-hot ≈ +0.51`;
+* representation range ~0.51;
+* worst-case MCC ~0.56.
+
+Por tanto:
+
+> **Endolysin prediction is strongly redundancy-sensitive and representation-limited.**
+
+La tarea depende sustancialmente tanto del soporte redundante como de la calidad de la representación.
+
+### Depolymerase: high-floor but interaction-dependent
+
+Depolymerase presentó una firma muy diferente:
+
+* MCC global ~0.84;
+* strict MCC ~0.85;
+* worst-case ~0.79;
+* poca degradación neta con R o S;
+* `T30−T6 ≈ +0.02`;
+* interacción R×S relativamente importante;
+* mayor dependencia del classifier que otras tareas de alto desempeño.
+
+Por tanto, DPO parece un régimen:
+
+> **high-floor, comparatively capacity-saturated, but interaction- and learner-dependent.**
+
+No hay evidencia para interpretar su leve mejora nativa bajo R más estricto como un beneficio biológico de eliminar redundancia.
+
+### VAL: evidence-limited and unstable
+
+VAL fue el régimen más inestable del benchmark:
+
+* worst-case MCC ~**0.19**;
+* surface range ~**0.45**;
+* `|S| ≈ 0.078`;
+* extreme R×S interaction ~**0.34**;
+* T30−T6 ~+0.12;
+* representation range ~**0.71**;
+* algorithm range ~**0.32**.
+
+Sin embargo, esta aparente sensibilidad extrema debe interpretarse principalmente como:
+
+> **an evidence-limited generalization regime.**
+
+Su bajo soporte positivo puede amplificar los efectos aparentes de R, S, representation y algorithm. Por eso RQ10 será necesaria antes de hacer claims fuertes sobre VAL.
+
+### Multiclass: stable in magnitude, complex in geometry
+
+Multiclass mostró:
+
+* MCC global ~0.81;
+* strict MCC ~0.82;
+* worst-case ~0.74;
+* efectos netos pequeños de R y S;
+* T30−T6 ~+0.03;
+* representation effects todavía mayores que algorithm effects.
+
+Aunque RQ2–RQ4 mostraron mucha non-monotonicity e interacción local, el efecto extremo neto fue relativamente pequeño.
+
+Así, multiclass parece:
+
+> **a comparatively stable but locally non-monotonic discrimination regime.**
+
+Esto demuestra que una superficie puede tener geometría compleja sin presentar una gran degradación extrema.
+
+### Los subtipos no constituyen un único régimen
+
+RQ9 dejó claro que “subtype prediction” no es una categoría metodológicamente homogénea:
+
+* **Endolysin:** redundancy- and representation-limited.
+* **Depolymerase:** high-floor and interaction-dependent.
+* **VAL:** evidence-limited and highly unstable.
+
+Por tanto, la función biológica concreta determina qué factor limita la generalización.
+
+### Representation sigue dominando dentro de cada task
+
+En todas las tareas, el spread inducido por cambiar representación fue mayor que el inducido por cambiar classifier.
+
+El ratio `representation range / algorithm range` fue aproximadamente:
+
+* global hard: **5.2×**
+* global easy: **3.6×**
+* endolysin: **3.0×**
+* multiclass: **2.9×**
+* global mixed: **2.9×**
+* VAL: **2.2×**
+* depolymerase: **1.6×**
+
+Incluso en los regímenes donde el learner importa, **representation choice sigue siendo el factor model-side dominante**.
+
+### AP skill confirma los mismos regímenes
+
+Las sensibilidades con AP skill reprodujeron esencialmente los fingerprints obtenidos con MCC:
+
+* endolysin y global easy/mixed siguen siendo R-sensitive;
+* global hard sigue siendo muy estable;
+* VAL sigue mostrando la mayor sensibilidad a S;
+* DPO sigue mostrando poca degradación neta.
+
+Por tanto, los functional regimes no son artefactos de una sola métrica.
+
+## Take-home message
+
+> **Protein-function prediction does not exhibit a single generalization regime. Different biological task formulations fail for different reasons: some are limited primarily by redundant evidence, others by representation capacity, others by non-additive evaluation effects, and low-support tasks additionally by evidence scarcity.**
+
+Y la frase conceptual más fuerte para guardar:
+
+> **Generalization difficulty is a property of the biological learning problem itself, not merely of the model used to solve it.**
+
+## RQ10 — VAL under Low-N: evidence scarcity and metric fragility
+
+RQ10 confirmó que **VAL constituye un régimen genuinamente evidence-limited**. Tras el control de redundancia y la separación homológica, el número de positivos disponibles queda extremadamente reducido:
+
+* **Train positives:** ~31–75
+* **Test positives:** ~14–32
+* **Positive test homology clusters:** ~12–26
+
+Por tanto, el problema no es solo que haya pocas secuencias, sino que también existen **pocos componentes homólogos positivos independientes**.
+
+### La evaluación queda pobremente resuelta
+
+Con solo 14–32 positivos en test, un único VAL correctamente o incorrectamente clasificado puede cambiar recall en aproximadamente:
+
+$$
+\boxed{3.1\%-7.1\%}
+$$
+
+Esto significa que diferencias aparentemente grandes entre modelos pueden depender de apenas uno o dos proteins.
+
+La conclusión conceptual más importante es:
+
+> **Low-N constrains not only what can be learned, but also how precisely generalization can be measured.**
+
+### Learning scarcity y evaluation scarcity son problemas distintos
+
+La reducción de R disminuye directamente la cantidad de evidencia VAL disponible para aprendizaje. Por otro lado, S puede redistribuir pequeños grupos homólogos entre train y test, produciendo cambios importantes en el número de positivos evaluados aun cuando el tamaño global del dataset cambie muy poco.
+
+El soporte positivo de test mostró una asociación relativamente fuerte con la performance observada, por ejemplo:
+
+$$
+\rho(n_{test+}, MCC_{median})\approx0.67
+$$
+
+y asociaciones también claras con recall, balanced accuracy, AP y ROC-AUC.
+
+Estas relaciones son descriptivas, no causales, porque al cambiar S también cambia la composición del test.
+
+### La escasez afecta la estabilidad de las métricas de forma metric-dependent
+
+La volatilidad no puede reducirse únicamente al threshold de clasificación. Ranking metrics también mostraron sensibilidad al bajo soporte, especialmente ROC-AUC.
+
+Por tanto:
+
+> **Evidence scarcity affects different evaluation metrics differently, rather than producing a uniform increase in variance.**
+
+### Existe prediction fragility, no solo metric fragility
+
+El análisis por secuencia mostró que los modelos frecuentemente **no coinciden en qué VAL proteins son reconocibles**.
+
+La mediana del fraction-of-models vote para positivos fue cercana a **0.40**, y aproximadamente **65% de las exposiciones positivas** fueron `model-dependent`.
+
+En algunas condiciones estrictas prácticamente no hubo positivos reconocidos de manera estable por ≥80% de los modelos, mientras una fracción importante aparecía como `stable miss`.
+
+Esto demuestra dos fenómenos distintos:
+
+> **Metric fragility:** pocos positivos hacen que cada protein tenga un peso enorme en la métrica.
+
+> **Prediction fragility:** diferentes representaciones y classifiers reconocen diferentes subsets de esos pocos positivos.
+
+### Algunos VAL proteins son persistentemente difíciles
+
+Las secuencias positivas que reaparecen en varios test regimes muestran considerable desacuerdo entre modelos, con algunos proteins sistemáticamente mal reconocidos.
+
+Esto indica que la incertidumbre no está distribuida uniformemente entre todos los positivos.
+
+### Representaciones fuertes mantienen señal incluso en Low-N
+
+A pesar de la escasez extrema, ESM2-T30 mantuvo una ventaja muy fuerte:
+
+$$
+\boxed{T30-T6\approx+0.12\ MCC}
+$$
+
+$$
+\boxed{T30-onehot\approx+0.69\ MCC}
+$$
+
+En algunas celdas con apenas ~14 positivos, one-hot podía fallar prácticamente todos los VAL, mientras T30 recuperaba una fracción importante de ellos.
+
+Por tanto:
+
+> **Evidence scarcity increases uncertainty without eliminating learnability.**
+
+Sin embargo, T30 **no resuelve el problema Low-N**. Su ventaja no aumentó sistemáticamente a medida que disminuyó el soporte, por lo que no hay evidencia para afirmar que el PLM compensa proporcionalmente la escasez.
+
+### Low-N tampoco explica por sí solo la dependencia del classifier
+
+No se observó una relación fuerte entre positive support y algorithm spread. Así, la variabilidad entre modelos VAL parece surgir de una combinación de:
+
+* evidence scarcity;
+* representation;
+* learner;
+* test composition;
+* homology topology.
+
+No puede atribuirse únicamente a `n`.
+
+### VAL es mucho más escaso que los otros subtypes
+
+En mediana:
+
+| Task         | Train + |  Test + |
+| ------------ | ------: | ------: |
+| Endolysin    |   ~1668 |    ~680 |
+| Depolymerase |    ~277 |    ~117 |
+| **VAL**      | **~47** | **~18** |
+
+Así, VAL posee aproximadamente **6–7× menos positivos test que depolymerase** y casi **40× menos que endolysin**.
+
+Esto respalda claramente su clasificación como **evidence-limited functional regime**.
+
+### El problema también aparece dentro de multiclass
+
+VAL mantiene soporte muy bajo dentro de `multiclass_clean`, aproximadamente **14–36 positivos test**.
+
+En los regímenes más estrictos, VAL recall y F1 disminuyen claramente aun cuando el MCC multiclass global sigue siendo relativamente bueno.
+
+Esto demuestra que:
+
+> **Aggregate multiclass performance can conceal severe uncertainty in a low-support functional class.**
+
+## Take-home message
+
+> **VAL prediction occupies a distinct evidence-limited generalization regime. Stringent sequence control leaves only a few dozen positive proteins and homology components for both learning and evaluation, causing individual proteins to exert disproportionate influence on reported metrics and producing substantial disagreement across model families. Nevertheless, strong pretrained representations retain meaningful predictive signal, showing that evidence scarcity increases uncertainty and measurement fragility without eliminating learnability.**
+
+Y la frase conceptual que yo guardaría para el paper es:
+
+> **Sparse biological evidence constrains not only what a model can learn, but how precisely its generalization can be measured.**
+
+## RQ11 — Binary subtype recognition vs multiclass functional discrimination
+
+RQ11 mostró que **la formulación de tarea cambia de manera profunda el problema de generalización**, incluso cuando las clases biológicas nominales son las mismas. El efecto no tiene una dirección universal: multiclass favorece fuertemente a endolysin, mejora moderadamente DPO y perjudica claramente a VAL.
+
+### Principales hallazgos
+
+* **Endolysin**
+
+  * Binary F1 ≈ **0.719**
+  * Multiclass F1 ≈ **0.969**
+  * Δ ≈ **+0.252**
+  * Multiclass fue mejor en prácticamente el **100%** de las condiciones.
+  * La mejora se explica por aumentos tanto de recall como de precision.
+
+* **Depolymerase**
+
+  * Binary F1 ≈ **0.843**
+  * Multiclass F1 ≈ **0.900**
+  * Δ ≈ **+0.058**
+  * También se beneficia del multiclass, pero de manera mucho más moderada.
+
+* **VAL**
+
+  * Binary F1 ≈ **0.400**
+  * Multiclass F1 ≈ **0.299**
+  * Δ ≈ **−0.112**
+  * El deterioro está impulsado especialmente por una caída fuerte en precision.
+  * Esto muestra que VAL puede separarse del background no lítico, pero resulta mucho más difícil distinguirlo de otras funciones líticas.
+
+### El comparison universe explica gran parte del efecto
+
+El número de positivos por subtipo es similar entre formulaciones, pero cambia radicalmente **contra qué proteínas se realiza la decisión**.
+
+Binary pregunta:
+
+> “¿Es este protein compatible con este subtype frente a un background no lítico?”
+
+Multiclass pregunta:
+
+> “¿Cuál de estas funciones líticas mutuamente exclusivas describe mejor este protein?”
+
+Por tanto, el cambio de formulación modifica el decision problem, no simplemente el número de clases.
+
+### VAL se confunde principalmente con depolymerase
+
+La matriz de confusión multiclass mostró aproximadamente:
+
+* True DPO → DPO: **~98%**
+* True Endolysin → Endolysin: **~89%**
+* True VAL → VAL: **~25%**
+* True VAL → DPO: **~64%**
+
+Así, el principal cuello de botella funcional es:
+
+> **VAL vs depolymerase discrimination.**
+
+VAL prácticamente no se confunde con endolysin.
+
+### T30 mejora la discriminación, pero no elimina el problema
+
+Para VAL multiclass:
+
+* one-hot: reconocimiento prácticamente nulo;
+* Roxy: ~22%;
+* T6: ~36%;
+* T30: ~47%.
+
+La confusión VAL→DPO disminuye con representaciones más fuertes, pero incluso T30 deja aproximadamente la mitad de los VAL asignados como DPO.
+
+Por tanto:
+
+> **better representations improve functional resolution, but do not remove the intrinsic formulation difficulty of VAL.**
+
+### El resultado persiste incluso con T30 y bajo R30/S30
+
+Con T30:
+
+* Endolysin: Δ multiclass−binary ≈ **+0.060**
+* DPO: ≈ **+0.047**
+* VAL: ≈ **−0.231**
+
+Y en `R30_S30`:
+
+* Endolysin: ≈ **+0.086**
+* DPO: ≈ **+0.046**
+* VAL: ≈ **−0.280**
+
+Por tanto, la penalización multiclass de VAL no puede explicarse simplemente por una representación débil o por redundancy/homology leakage.
+
+### Task formulation cambia también el generalization fingerprint
+
+El cambio binary→multiclass no solo mueve F1; cambia qué factores limitan cada tarea.
+
+El caso más claro es **endolysin**:
+
+* Binary:
+
+  * |R| ≈ 0.136
+  * representation range ≈ 0.467
+  * algorithm range ≈ 0.151
+  * T30−T6 ≈ 0.119
+
+* Multiclass:
+
+  * |R| ≈ 0.019
+  * representation range ≈ 0.036
+  * algorithm range ≈ 0.013
+  * T30−T6 ≈ 0.004
+
+Así, el mismo subtipo pasa de ser **redundancy- and representation-sensitive** a un régimen prácticamente **saturated and robust** simplemente al cambiar el decision problem.
+
+### Los rankings de modelos sí se transfieren bastante bien
+
+Aunque performance y sensibilidad cambian, las configuraciones fuertes suelen seguir siendo fuertes:
+
+* Endolysin: Spearman ≈ **0.89**
+* DPO: ≈ **0.87**
+* VAL: ≈ **0.86**
+
+Dentro de cada celda R×S, las correlaciones son incluso mayores.
+
+Esto indica:
+
+> **task formulation changes absolute difficulty and sensitivity, but does not completely reshuffle which model configurations are strong.**
+
+### Un buen multiclass MCC puede esconder una clase mal resuelta
+
+A través de las familias multiclass:
+
+* median global MCC ≈ **0.81**
+* median worst-class F1 ≈ **0.30**
+* median best-class F1 ≈ **0.97**
+* class-F1 range ≈ **0.65**
+
+Por tanto, un buen metric global puede coexistir con una clase funcional pobremente resuelta, especialmente VAL.
+
+## Take-home message
+
+> **Binary subtype recognition and multiclass functional discrimination are not interchangeable formulations of the same problem. The formulation changes both absolute performance and the entire generalization landscape, with strongly class-dependent effects.**
+
+Y la frase conceptual más fuerte:
+
+> **A protein may be easy to recognize as compatible with a functional category yet difficult to resolve against biologically related alternatives.**
+
+O, más general:
+
+> **A protein-function benchmark is defined not only by its labels, but by the biological alternatives those labels are required to discriminate.**
+
+## RQ12 — Positive–unlabeled learning paradigm
+
+RQ12 mostró que **el principal efecto del paradigma PU no es necesariamente mejorar la recuperación de positivos ya conocidos, sino cambiar cómo se organiza y prioriza el espacio de proteínas no anotadas**.
+
+### Principales hallazgos
+
+* **Naive P-vs-U y BaggingPU recuperan positivos conocidos de forma casi equivalente.**
+
+  * P ≥ U90: ~0.868 vs ~0.867
+  * P ≥ U95: ~0.805 vs ~0.798
+  * P ≥ U99: ~0.584 vs ~0.576
+  * Los deltas medianos son mínimos y gran parte de las comparaciones caen dentro de una zona de practical tie.
+
+* Por tanto:
+
+> **BaggingPU does not provide a systematic benchmark-wide improvement in known-positive recovery relative to naive P-vs-U.**
+
+### BaggingPU sí cambia de manera real la priorización de U
+
+Aunque el recovery agregado sea parecido, BaggingPU reorganiza sustancialmente el ranking de proteínas unlabeled:
+
+* U-score Spearman vs naive: **~0.875**
+* tie-aware top-1% Jaccard: **~0.63**
+* tie-aware top-5% Jaccard: **~0.60**
+
+Así, aproximadamente **40% de los candidatos del extremo superior cambian** entre naive y BaggingPU.
+
+Esto demuestra:
+
+> **Similar aggregate recovery does not imply similar discovery behavior.**
+
+La elección del paradigma PU puede cambiar materialmente qué proteínas se seleccionarían para validación experimental.
+
+### Elkan–Noto actúa principalmente como score correction
+
+Elkan–Noto conserva prácticamente por completo el ordenamiento naive:
+
+* U-score Spearman: **~0.999995**
+* top-5% tie-aware overlap: **1.0**
+* top-1% overlap coefficient: **1.0**
+
+Esto indica que EN **no produce una repriorización sustancial del proteoma U**, sino que principalmente transforma la escala de scores mediante propensity correction.
+
+### El aparente gain U99 de Elkan–Noto está dominado por clipping y ties
+
+Elkan–Noto muestra aparentemente mayor P ≥ U99 (~0.683), pero la auditoría tie-aware reveló:
+
+* median U99 threshold = **1.0**
+* ~**2.2%** de los U quedan exactamente en score 1.0
+* ~**66%** de los P quedan exactamente en 1.0
+* strict P > U99 = **0**
+* ~**82%** del recovery U99 mediano depende de ties en el boundary
+
+Por tanto:
+
+> **Elkan–Noto's apparent U99 advantage reflects ceiling compression and boundary ties rather than improved resolved ranking above the extreme U tail.**
+
+### Elkan–Noto pierde resolución en el extremo superior
+
+En top-1%, el pool tie-inclusive de EN contiene aproximadamente **2.2%** de los U, porque muchos quedan empatados en 1.0.
+
+El top-1% naive queda prácticamente contenido dentro de ese plateau de EN.
+
+Así, EN no selecciona necesariamente candidatos distintos; **reduce la resolución entre los candidatos más altos**.
+
+### BaggingPU es internamente bastante estable
+
+Across its 30 internal bags:
+
+* median per-protein score SD ≈ **0.020**
+* mean score SD ≈ **0.051**
+
+Pero mayor variabilidad entre bags se asocia con menor positive recovery:
+
+$$
+\rho \approx -0.70
+$$
+
+Esto sugiere que cuando la predicción depende fuertemente de qué U proteins son temporalmente tratados como negativos, la recuperación de positivos también se vuelve menos consistente.
+
+### No existe un PU method winner universal
+
+Los tres paradigmas hacen cosas distintas:
+
+* **Naive:** baseline simple y estable.
+* **BaggingPU:** recovery similar, pero candidate ranking realmente distinto.
+* **Elkan–Noto:** ranking casi idéntico al naive, pero score scale corregida y comprimida en el extremo superior.
+
+Por tanto, no hay soporte para una jerarquía simple tipo:
+
+$$
+EN > BaggingPU > Naive
+$$
+
+La elección depende del objetivo del sistema.
+
+## Take-home message
+
+> **Explicit PU learning does not necessarily improve the recovery of already annotated positives, but it can substantially alter how unlabeled proteins are prioritized for discovery. BaggingPU genuinely reorders the candidate space, whereas Elkan–Noto largely preserves the naive ranking while changing score scale and creating upper-tail ties through propensity correction.**
+
+Y la frase conceptual que guardaría:
+
+> **When annotation is incomplete, the choice of learning paradigm may matter less for recovering what is already known than for deciding what should be investigated next.**
