@@ -1353,3 +1353,1881 @@ No puede cuantificarse de forma defendible el runtime multiplier de BaggingPU o 
 La frase conceptual que guardaría para el paper es:
 
 > **Representation quality and downstream model complexity are not interchangeable computational burdens: stronger pretrained representations can shift predictive complexity upstream, enabling lightweight downstream models while concentrating most additional computational cost in an amortizable representation-generation step.**
+
+Sí bebé. Te lo dejaría así, **listo para pegar en `Notes_results.md`**.
+
+## RQ19 — Candidate prioritization for experimental follow-up
+
+RQ19 mostró que el benchmark PU puede convertirse en una **estrategia de priorización biológicamente accionable**, identificando proteínas unlabeled cuyo comportamiento candidato persiste a través de representaciones, paradigmas PU, learners y múltiples regímenes de generalización. El objetivo no fue asignar función ni producir una “probabilidad de ser lítica”, sino generar una shortlist transparente de proteínas **prioritized for experimental characterization**. El ranking final quedó deliberadamente separado de las capas de soporte ortogonal: la selección se basa solo en robustez predictiva, mientras que R/S, Roxy, T30 y sequence novelty caracterizan independientemente a los candidatos. 
+
+### Predictive prioritization
+
+El universo contenía aproximadamente **209,972 proteínas U distintas**, de las cuales **101,370** cumplieron el contrato mínimo de cobertura necesario para una priorización robusta.
+
+El ranking final utilizó exclusivamente:
+
+* median U percentile;
+* Q25 U percentile;
+* consenso ESM2-T6 / ESM2-T30;
+* consenso naive / BaggingPU;
+* consenso LR / XGB.
+
+No se incluyeron en el ranking:
+
+* disponibilidad R30/S30;
+* Roxy support;
+* T30 latent support;
+* sequence novelty;
+* top-tail membership.
+
+Esto evita que evidencia ausente o métricas ortogonales determinen artificialmente la prioridad principal. El diseño final separa explícitamente predictive robustness de generalization breadth, physicochemical/latent support y novelty. 
+
+### El top predictivo es extremadamente robusto
+
+Para el top-20:
+
+* `predictive_core_score` ≈ **0.9992–0.99998**;
+* mediana ≈ **0.99963**;
+* mediana de `Q25 U percentile` ≈ **0.99943**;
+* **20/20** permanecieron en el top-5% de U en todas sus observaciones;
+* también mostraron soporte extremo bajo las diferentes representaciones, paradigmas PU y learners.
+
+La estabilidad leave-one-component-out fue alta: los primeros candidatos mantuvieron prácticamente su posición y el desplazamiento máximo dentro del top-20 fue de aproximadamente **4 posiciones**.
+
+Por tanto:
+
+> **The candidate shortlist is not driven by a single representation, PU method, learner, or isolated extreme prediction.**
+
+### Generalization breadth
+
+R/S se mantuvo como un eje descriptivo independiente.
+
+Los candidatos top-20 fueron observados en aproximadamente **4–8 celdas R×S**, con mediana de **5 celdas**.
+
+De ellos:
+
+$$
+\boxed{14/20}
+$$
+
+tuvieron evidencia explícita bajo **ambos extremos R30 y S30**.
+
+Los restantes candidatos no fueron penalizados: la ausencia de R30/S30 significa únicamente que la proteína no apareció en ese outer-test particular, no que haya fallado bajo ese régimen.
+
+Así:
+
+> **predictive strength and breadth of generalization evidence are related but distinct properties of a candidate.**
+
+### Identidad biológica y novelty
+
+El mapping al universo canónico permitió recuperar para los candidatos:
+
+* accession UniProt;
+* protein name;
+* sequence;
+* sequence state;
+* provenance.
+
+Además:
+
+$$
+\boxed{0/20}
+$$
+
+del top-20 correspondieron a exact-sequence duplicates de positivos conocidos.
+
+Entre los candidatos priorizados aparecieron anotaciones biológicamente plausibles como:
+
+* LysM domain-containing proteins;
+* Lyz;
+* NlpC/P60 proteins;
+* L-alanoyl-D-glutamate peptidases;
+* putative peptidases;
+* lytic tail proteins;
+* amidases;
+* CHAP-domain proteins;
+* Peptidase C51 proteins.
+
+La proximidad a positivos conocidos fue muy heterogénea. Algunos candidatos fueron altamente related a P conocidos, mientras otros presentaron **sequence novelty muy alta**.
+
+La mediana de:
+
+$$
+1-\mathrm{5mer\ Jaccard}
+$$
+
+fue aproximadamente:
+
+$$
+\boxed{0.44}
+$$
+
+mostrando que la shortlist combina candidatos known-like y candidatos mucho más distantes.
+
+### Orthogonal support
+
+La caracterización ortogonal se realizó usando los contratos congelados:
+
+* **48 descriptors Roxy exactos**;
+* **640 dimensiones ESM2-T30 exactas**.
+
+Estos valores se reportaron como soporte independiente y **no se utilizaron para reordenar el ranking predictivo**. El notebook final mantiene explícitamente estas dimensiones como ejes separados del ranking principal. 
+
+En el top-20:
+
+* mediana Roxy compatibility ≈ **0.60**;
+* mediana T30 latent support ≈ **0.72**.
+
+Ambas medidas mostraron variabilidad suficiente para diferenciar candidatos dentro de una cola predictiva prácticamente saturada.
+
+Así, candidatos con niveles predictivos similares pueden diferenciarse posteriormente según:
+
+* breadth R/S;
+* physicochemical compatibility;
+* latent-space support;
+* sequence novelty.
+
+### Candidatos particularmente interesantes
+
+Sin construir un nuevo scalar ranking, algunos candidatos combinaron:
+
+* predictive robustness extrema;
+* evidencia tanto R30 como S30;
+* alta sequence novelty;
+* soporte ortogonal razonable.
+
+Entre los ejemplos más interesantes aparecieron:
+
+* **Q4ZC50 — ORF003**
+* **A8ATB8 — PlyB025**
+* **A0A1X9I9I9 — Peptidase C51 domain-containing protein**
+* **A0A024B467 — Peptidase C51 domain-containing protein**
+
+Estos constituyen ejemplos atractivos para experimental follow-up porque combinan alta confianza predictiva con evidencia de generalización y menor similitud trivial con positivos conocidos.
+
+### Take-home message
+
+> **A subset of unlabeled proteins remains consistently candidate-like across independent pretrained representations, PU formulations, downstream learners, and multiple generalization regimes. Predictive consensus can therefore nominate a robust candidate set, while R/S breadth, physicochemical compatibility, latent representation support, and sequence novelty provide independent and transparent criteria for selecting proteins for experimental characterization.**
+
+La frase conceptual que guardaría para el paper es:
+
+> **Prediction nominates candidates; generalization breadth, orthogonal representation support, and sequence novelty characterize them. None of these components independently constitutes biological validation.**
+
+**RQ19 CLOSED — REAL-DATA PASS.**
+
+Sí bebé. Te lo dejo **listo para pegar en `Notes_results.md`**, ya con la versión final corregida de RQ20.
+
+## RQ20 — Final generalization-regime synthesis and deployment decision map
+
+RQ20 integró los resultados de RQ1–RQ19 para transformar el benchmark en una **síntesis operacional de regímenes de generalización y estrategias de despliegue**. El objetivo no fue identificar un único “best model”, sino determinar qué factores controlan la generalización y qué estrategia resulta más defendible según el objetivo: máximo rendimiento supervised, deployment compute-aware, remote-homology generalization, PU recovery, candidate discovery o escenarios Low-N.
+
+### Redundancy and homology separation represent distinct generalization axes
+
+En el benchmark nativo:
+
+$$
+\Delta MCC_{R30-R90}\approx -0.0703
+$$
+
+mientras:
+
+$$
+\Delta MCC_{S30-S90}\approx -0.0167.
+$$
+
+Sin embargo, el análisis common-test mostró que estos efectos no deben interpretarse simétricamente.
+
+Para T30, el efecto common-R fue aproximadamente:
+
+$$
+\boxed{-0.0029}
+$$
+
+indicando que gran parte de la magnitud nativa asociada a R refleja **reestructuración de la evidencia disponible y de la población evaluada**, además de dificultad de generalización.
+
+En contraste, el efecto common-entity de S fue:
+
+```text
+R90   S30−S90 ≈ −0.0523
+R70   S30−S90 ≈ −0.0253
+R50   S30−S90 ≈ −0.0081
+R30   S30−S90 ≈ +0.0017
+```
+
+Así, el costo de separar train/test por homología es real cuando permanece suficiente soporte redundante, pero **pierde magnitud progresivamente a medida que R se vuelve más estricto**.
+
+Take-home:
+
+> **R drives benchmark-wide change largely by restructuring evidence and population composition, whereas S represents a genuine same-entity generalization penalty whose impact depends strongly on the available redundancy.**
+
+### Representation quality is the strongest transferable modeling decision
+
+La jerarquía de representaciones permaneció clara:
+
+$$
+T30-T6\approx +0.0769\ MCC
+$$
+
+$$
+T30-Roxy\approx +0.2346\ MCC.
+$$
+
+RQ17 mostró que:
+
+* T30−Roxy fue resolved-positive en aproximadamente **95%** de las comparaciones;
+* T30−T6 fue resolved-positive en ~**59%**, reflejando una ventaja real pero dependiente del task.
+
+En contraste, entre learners competitivos dentro de T30:
+
+$$
+MLP-XGB\approx +0.0045
+$$
+
+y aproximadamente **89%** de las comparaciones bootstrap incluyeron cero.
+
+Por tanto:
+
+> **Representation choice is substantially more consequential and robust than fine-grained choice among competitive downstream learners.**
+
+### PLM capacity is beneficial but task-dependent
+
+T30 mejora generalmente sobre T6, pero no constituye una ganancia uniforme en todos los regímenes.
+
+El caso más claro de saturación fue `global_hard`, donde:
+
+* T30−T6 fue aproximadamente **+0.008 MCC**;
+* solo ~**5%** de las comparaciones bootstrap fueron resolved-positive.
+
+Así, `global_hard` constituye un **capacity-saturation regime**, mientras otros tasks mantienen beneficios mucho mayores al aumentar la capacidad de la representación.
+
+### Supervised deployment strategies
+
+La estrategia performance-oriented observada dependió del task:
+
+```text
+global_easy            T30 + KNN
+global_hard            T30 + XGB
+global_mixed           T30 + KNN
+subtype_endolysin      T30 + KNN
+subtype_depolymerase   T30 + MLP
+subtype_val            T30 + MLP*
+multiclass_clean       T30 + KNN
+```
+
+`*` VAL permanece bajo un guardrail explícito de evidencia insuficiente.
+
+A nivel transversal, tanto el **cross-task performance reference** como el **cross-task compute-aware near-best reference** fueron:
+
+$$
+\boxed{\text{ESM2-T30 + KNN}}
+$$
+
+con aproximadamente:
+
+* median MCC = **0.927**
+* median worst-case MCC = **0.860**
+* median strict R30/S30 MCC = **0.888**
+* downstream runtime ≈ **2.4 s**
+
+Esto refuerza la conclusión de RQ18 de que una representación fuerte puede permitir un learner downstream muy ligero sin sacrificar sustancialmente rendimiento.
+
+### Compute-aware deployment
+
+La estrategia compute-aware final se definió como:
+
+> **the fastest strategy whose median MCC lies within 0.02 of the best observed strategy for the same task.**
+
+El umbral 0.02 es descriptivo y **no constituye equivalencia estadística**.
+
+Los casos más interesantes fueron:
+
+#### Global hard
+
+Performance-oriented:
+
+$$
+T30+XGB,\quad MCC\approx0.943
+$$
+
+Compute-aware:
+
+$$
+T6+KNN,\quad MCC\approx0.927
+$$
+
+con una pérdida de solo:
+
+$$
+\approx0.0157\ MCC
+$$
+
+pero reduciendo el downstream runtime aproximadamente de **38 s a 0.65 s**.
+
+#### Depolymerase
+
+Performance-oriented:
+
+$$
+T30+MLP,\quad MCC\approx0.922
+$$
+
+Compute-aware:
+
+$$
+T6+KNN,\quad MCC\approx0.914
+$$
+
+con una pérdida de solo:
+
+$$
+\approx0.008\ MCC
+$$
+
+y reducción del runtime desde ~**40 s a ~1.9 s**.
+
+Esto muestra que **T6 puede ser suficiente en algunos regímenes de saturación cuando el costo operacional importa**, aunque T30 sigue siendo la referencia general.
+
+### PU known-positive recovery
+
+Para T30, BaggingPU produjo frente a naive:
+
+$$
+\Delta U95\approx +0.00034
+$$
+
+con:
+
+* resolved-positive fraction ≈ **17%**
+* overlap-zero ≈ **70%**
+
+Por tanto, para recuperación de positivos conocidos:
+
+$$
+\boxed{\text{T30 + naive P-vs-U}}
+$$
+
+es el default más simple y defendible.
+
+Esto no implica que naive y BaggingPU produzcan el mismo ranking de U.
+
+### PU candidate discovery
+
+Con T30, naive y BaggingPU mostraron aproximadamente:
+
+* U-score Spearman ≈ **0.81**
+* top-5% Jaccard ≈ **0.53**
+
+Así, aunque BaggingPU aporta poco al recovery agregado, **reorganiza materialmente la cola de candidatos**.
+
+Para discovery:
+
+$$
+\boxed{\text{T30 + naive/BaggingPU consensus}}
+$$
+
+es más apropiado que seleccionar un único paradigma.
+
+Take-home:
+
+> **PU learning is recovery-substitutive but discovery-coupled under strong representations.**
+
+### Weak-representation PU regime
+
+One-hot constituye una excepción importante.
+
+BaggingPU−naive produjo:
+
+$$
+\Delta U95\approx +0.093
+$$
+
+con ~**59% resolved-positive**.
+
+Por tanto, uncertainty-aware PU learning puede rescatar parcialmente representaciones débiles, aunque la recomendación preferida sigue siendo **mejorar la representación cuando sea posible**.
+
+### T30 remains robust across PU paradigms
+
+La ventaja T30−T6 para U95 fue:
+
+```text
+BaggingPU   +0.0759
+naive       +0.0724
+Elkan–Noto  +0.0724
+```
+
+con:
+
+$$
+\boxed{100\%\ resolved-positive}
+$$
+
+en los tres paradigmas.
+
+Así:
+
+> **The advantage of the stronger pretrained representation is robust to the PU learning paradigm.**
+
+### VAL remains an evidence-limited regime
+
+VAL mostró:
+
+* median MCC CI width ≈ **0.30**
+* positive outer-test support mediano ≈ **17**
+
+por lo que no se recomienda un deployment standalone de alta confianza, incluso cuando algunos modelos presentan point estimates elevados.
+
+Recomendación:
+
+> **Use VAL predictions as uncertainty-aware evidence-supporting triage, while prioritizing acquisition of additional labeled evidence.**
+
+### Candidate discovery is operationally feasible
+
+RQ19 se integró sin modificar su ranking.
+
+El resultado final conserva:
+
+* **101,370** candidatos elegibles;
+* top-20 predictive consensus extremadamente alto;
+* **14/20** candidatos con evidencia disponible tanto en R30 como S30;
+* **0/20** exact-sequence duplicates de positivos conocidos.
+
+Así, el benchmark no solo caracteriza generalización sino que puede producir una shortlist transparente para experimental follow-up.
+
+### Final observed generalization regimes
+
+RQ20 consolidó ocho regímenes principales:
+
+1. **Redundancy / evidence-population sensitive**
+2. **Homology-sensitive, conditionally**
+3. **Representation-dependent**
+4. **Capacity-dependent, task-specific**
+5. **Learner-secondary / upper-tier saturation**
+6. **Label-uncertain / discovery-coupled**
+7. **Evidence-limited**
+8. **Formulation-dependent**
+
+Estos regímenes no son clusters mutuamente exclusivos; una misma tarea puede ocupar varios simultáneamente.
+
+### Final deployment map
+
+```text
+Routine supervised deployment
+    → ESM2-T30 + KNN
+
+Maximum supervised performance
+    → task-specific T30 learner
+
+Compute-constrained saturated regimes
+    → T6 + KNN can be sufficient when within 0.02 MCC of best
+
+Remote-homology / stringent generalization
+    → prefer strong pretrained representations, typically T30
+
+PU known-positive recovery
+    → T30 + naive P-vs-U
+
+PU candidate discovery
+    → T30 + naive/BaggingPU consensus
+
+Weak/legacy representations
+    → BaggingPU can materially improve recovery
+
+VAL / Low-N
+    → no standalone high-confidence deployment
+
+Experimental candidate prioritization
+    → RQ19 predictive consensus + independent R/S, Roxy, T30 and novelty evidence
+```
+
+### Final take-home message
+
+> **Generalization in phage lytic-function prediction is not governed by a single notion of model quality. Biological task formulation, redundancy structure, train–test homology, representation capacity, label uncertainty, evidence availability, and computational cost define distinct but interacting deployment regimes. Strong pretrained representations provide the most transferable predictive foundation, while downstream learner complexity and uncertainty-aware learning should be added only when their specific benefits are supported by the target regime.**
+
+**RQ20 CLOSED — REAL-DATA PASS.**
+
+Claro. Te dejaría algo así, compacto pero con suficiente detalle para tus notas:
+
+## RQ6 — Complete R×S surface geometry
+
+RQ6 reconstruyó las **140 superficies completas** `task × representation × learner`, cada una con las **16 combinaciones R×S**, para estudiar directamente la geometría de generalización:
+
+$$
+M(R,S)
+$$
+
+y su degradación respecto de la condición permisiva:
+
+$$
+D(R,S)=M(R,S)-M(R90,S90).
+$$
+
+El análisis utilizó las **2,240 familias supervised** ya congeladas, sin reentrenamiento. Se calcularon además las **3,360 transiciones adyacentes** posibles de las superficies para caracterizar roughness y cambios locales. 
+
+### Hallazgo global
+
+La condición permisiva `R90/S90` alcanzó una mediana de MCC de **0.834**, mientras que el régimen más estricto `R30/S30` cayó a **0.738**. La pérdida estricta mediana fue:
+
+$$
+\boxed{\Delta MCC=-0.084}
+$$
+
+equivalente a conservar aproximadamente **90.3%** del rendimiento basal. La mediana del rango completo dentro de cada superficie fue **0.131 MCC** y la roughness local mediana fue **0.029 MCC**.
+
+### La geometría depende fuertemente de la tarea
+
+El cambio `R90/S90 → R30/S30` mostró regímenes funcionales muy distintos:
+
+* **VAL:** `−0.194 MCC`
+* **Endolysin:** `−0.174`
+* **Global easy:** `−0.131`
+* **Global mixed:** `−0.127`
+* **Global hard:** `−0.064`
+* **Multiclass:** `−0.030`
+* **Depolymerase:** `+0.0005`
+
+VAL y endolysin fueron las tareas más frágiles frente al endurecimiento conjunto de R y S. En cambio, depolymerase mostró prácticamente **ausencia de pérdida neta en el strict corner**, pero con una superficie localmente irregular, por lo que no debe interpretarse simplemente como un régimen monotónicamente robusto.
+
+### R produce cambios locales mayores que S
+
+En las transiciones adyacentes de las superficies:
+
+* movimiento hacia R más estricto: median `ΔMCC ≈ −0.022`
+* movimiento hacia S más estricto: median `ΔMCC ≈ −0.005`
+
+La magnitud absoluta mediana de cambio fue también mayor para R:
+
+* **R:** `0.032`
+* **S:** `0.016`
+
+Por tanto, la geometría completa confirma que la reducción de redundancia produce perturbaciones más grandes del landscape que la separación homológica, aunque la dominancia formal R vs S permanece como conclusión canónica de RQ5.
+
+### La representación cambia fuertemente la estabilidad del landscape
+
+La pérdida estricta mediana fue:
+
+* **one-hot:** `−0.194`
+* **ESM2-T6:** `−0.098`
+* **Roxy:** `−0.077`
+* **ESM2-T30:** `−0.068`
+
+ESM2-T30 mostró además la mayor retención de rendimiento, aproximadamente **92.9%**, y la menor roughness mediana (**0.019 MCC**). Así, T30 no solo alcanza mayor performance, sino que genera superficies de generalización más estables frente a cambios simultáneos de redundancia y separación homológica.
+
+### El patrón no depende exclusivamente de MCC
+
+La degradación medida con MCC mostró alta concordancia con métricas alternativas:
+
+* binary AP-skill: **Spearman ρ = 0.858**
+* multiclass macro-F1: **ρ = 0.758**
+
+Por tanto, la geometría observada no es un artefacto específico de MCC.
+
+### Take-home message
+
+> **Predictive performance does not deteriorate uniformly across the R×S space. Functional tasks occupy distinct generalization landscapes, with VAL and endolysin showing pronounced fragility, whereas depolymerase and multiclass prediction are substantially more stable at the strict corner. Redundancy perturbations induce larger local changes than homology-separation perturbations, and stronger pretrained representations—particularly ESM2-T30—retain substantially more performance and produce smoother generalization surfaces.**
+
+**Estado:** `REAL-DATA PASS` ✅. El notebook ejecutado recuperó 2,240 resultados, 140/140 superficies completas, 3,360 edges adyacentes, 15 exports y terminó sin errores ni stderr.
+
+Claro bebé, te lo dejaría así para tus notas:
+
+## RQ17 — Robustness: what does it really mean to “win”?
+
+RQ17 sintetizó la robustez de las **140 superficies `task × representation × learner`** sobre las 16 combinaciones R×S, comparando distintas definiciones de “mejor modelo”: peak, average, median, worst-case, win count, mean/worst rank, regret, remote generalization, strict-R performance y sensibilidad a R, S e interacción R×S. El análisis no reentrenó modelos ni repitió bootstrap; reutilizó los resultados supervisados existentes y las definiciones canónicas de RQ4/RQ5/RQ6. 
+
+### Hallazgo principal
+
+No existe una única definición operacional de “ganador”. Cada tarea presentó entre **2 y 5 estrategias distintas** dependiendo del criterio de robustez utilizado, con una mediana de **3 ganadores diferentes por tarea**. La estrategia con mejor peak performance no coincidió necesariamente con la de mejor average, worst-case o menor regret. Por tanto:
+
+> **“Winning” is operationally multidimensional.**
+
+### El espacio competitivo está fuertemente concentrado en ESM2-T30
+
+De las **91 combinaciones `task × robustness criterion`**, prácticamente todos los ganadores utilizaron **ESM2-T30**:
+
+* `T30 + KNN`: **36 wins**
+* `T30 + MLP`: **33**
+* `T30 + RF`: **9**
+* `T30 + LR`: **5**
+* `T30 + XGB`: **5**
+* estrategias T6: solo **3 wins**
+* Roxy / one-hot: **0**
+
+Así, **88/91 (~96.7%)** de los criterios fueron ganados por una estrategia basada en T30.
+
+### KNN y MLP representan dos formas distintas de robustez
+
+**T30 + KNN** fue el ganador más frecuente en términos absolutos, mientras que **T30 + MLP** fue la estrategia más consistente cross-task. En particular, MLP obtuvo:
+
+* mean cell rank: **2.35**
+* mean regret: **0.0069 MCC**
+* exact win fraction: **32.1%**
+* near-best ≤0.01 MCC: **74.1%**
+
+mientras que KNN alcanzó:
+
+* exact win fraction: **39.3%**
+* mean rank: **2.54**
+* mean regret: **0.0175**
+* near-best ≤0.01: **67.0%**
+
+Por tanto:
+
+> **KNN wins more often, whereas MLP remains closer to the optimum across a broader fraction of evaluation regimes.**
+
+La síntesis cross-task identificó formalmente a **ESM2-T30 + MLP** como la estrategia más consistente por rank/regret, mientras que **ESM2-T30 + KNN** fue la estrategia que ganó más criterios individuales. 
+
+### Representation dominates robustness
+
+La representación siguió siendo mucho más determinante que el learner downstream. ESM2-T30 mostró simultáneamente:
+
+* mayor MCC promedio;
+* mejor worst-case performance;
+* menor mean rank;
+* menor regret;
+* menor sensibilidad a R;
+* menor sensibilidad a S;
+* menor interacción R×S;
+* menor surface range.
+
+Así, una representación fuerte no solo mejora accuracy, sino que también **reduce la dependencia del modelo respecto del régimen de evaluación**.
+
+### Robustez depende de la tarea
+
+Los ganadores cambiaron claramente entre funciones:
+
+* **Global easy / mixed:** fuerte predominio de T30 + KNN.
+* **Global hard:** mayor predominio de T30 + RF.
+* **Depolymerase:** predominio de T30 + MLP.
+* **VAL:** predominio de T30 + MLP.
+* **Multiclass:** mayor desacuerdo entre criterios; ningún único modelo domina claramente todas las definiciones de robustez.
+
+Esto confirma que la selección del modelo debe permanecer **task-aware**, especialmente para multiclass y tareas evidence-limited.
+
+### Take-home message
+
+> **Robustness cannot be reduced to peak performance. The identity of the best model changes depending on whether robustness is defined through average performance, worst-case behavior, rank consistency, regret, or sensitivity to the R×S landscape. Nevertheless, the competitive space is strongly concentrated in ESM2-T30 models, with KNN maximizing win frequency and MLP providing the strongest cross-task rank and regret consistency.**
+
+**Estado:** `REAL-DATA PASS` ✅. El notebook ejecutado cubrió 2,240 resultados, 140 superficies, 20 estrategias y 13 criterios de robustez por tarea, sin errores de ejecución.
+
+Claro bebé, para tus notas yo lo dejaría así:
+
+## RQ20 — Stepwise degradation regimes across `90→70→50→30`
+
+RQ20 analizó **dónde ocurre la degradación** a lo largo de las trayectorias progresivas de redundancia (`R`) y separación homológica (`S`), en lugar de resumir únicamente el contraste extremo `90→30`. Se evaluaron por separado los pasos `90→70`, `70→50` y `50→30` en supervised y PU, clasificando las trayectorias como `early_degradation`, `mid_degradation`, `late_degradation`, `stable`, `non_monotonic` o `improving`. 
+
+### Supervised: no existe un breakpoint universal de R
+
+Las pérdidas medianas de MCC fueron muy similares en los tres pasos:
+
+* `R90→R70`: **≈ −0.022**
+* `R70→R50`: **≈ −0.0236**
+* `R50→R30`: **≈ −0.022**
+
+Por tanto, la degradación inducida por reducir redundancia es **progresiva y distribuida**, no concentrada en un único threshold. Formalmente, `R70→R50` fue el paso global más negativo, pero la diferencia respecto de los otros intervalos fue demasiado pequeña para interpretarlo como un “mid collapse”. 
+
+Además, aproximadamente **44.5%** de las trayectorias R fueron `non_monotonic`, mostrando que una pérdida neta clara puede coexistir con geometrías locales complejas. Entre las trayectorias degradativas, el punto dominante se distribuyó entre early, mid y late, con una mayor frecuencia tardía pero sin evidencia de un breakpoint universal.
+
+### S muestra un patrón más débil y tardío
+
+Para homology separation, las pérdidas medianas fueron:
+
+* `S90→S70`: **≈ −0.0018**
+* `S70→S50`: **≈ −0.0054**
+* `S50→S30`: **≈ −0.0081**
+
+Así, el efecto de S aumenta progresivamente hacia el régimen más estricto, pero sigue siendo menor que el efecto de R. El paso global dominante fue `S50→S30`, con mediana **−0.00806 MCC**. 
+
+Las trayectorias S fueron además mucho más irregulares: aproximadamente **63.4%** fueron `non_monotonic` y solo ~**4.5%** completamente estables. Esto indica que S produce un efecto más débil, contextual y geométricamente complejo que R. 
+
+### PU reproduce y acentúa la diferencia entre R y S
+
+En PU, el paso R más negativo también fue `R70→R50`:
+
+* `R90→R70`: **≈ −0.0255**
+* `R70→R50`: **≈ −0.0283**
+* `R50→R30`: **≈ −0.0181**
+
+Solo **14.6%** de las trayectorias PU-R fueron non-monotonic y ~**5.7%** stable, indicando una degradación mucho más consistente a lo largo de R.
+
+Para PU-S:
+
+* `S90→S70`: **≈ +0.0015**
+* `S70→S50`: **≈ −0.0030**
+* `S50→S30`: **≈ −0.0093**
+
+El efecto aparece principalmente en el último paso. Aproximadamente **33.9%** de las trayectorias fueron stable y **30.7%** non-monotonic, de modo que cerca de dos tercios del espacio PU-S no sigue una degradación monotónica clara. 
+
+### Las representaciones fuertes retrasan la degradación
+
+ESM2-T30 no solo mostró menor sensibilidad global, sino que desplazó la degradación hacia regiones más estrictas del espacio de secuencia.
+
+En supervised-R, T30 estuvo fuertemente enriquecido en `late_degradation`, mientras que representaciones simples mostraron más degradación temprana o respuestas non-monotonic.
+
+El patrón fue todavía más claro en PU-R: T30 concentró la mayor parte de sus trayectorias degradativas en los pasos middle/late, mientras que one-hot mostró mucha más degradación temprana y no monotonicity.
+
+Por tanto:
+
+> **Stronger protein representations do not merely improve absolute performance; they shift redundancy-driven degradation toward more stringent sequence-space regimes.**
+
+### La geometría depende de la tarea
+
+Los regímenes stepwise fueron altamente task-dependent.
+
+Las tareas globales y endolysin mostraron patrones degradativos relativamente interpretables, mientras que:
+
+* depolymerase,
+* VAL,
+* multiclass
+
+presentaron una fracción mucho mayor de trayectorias non-monotonic.
+
+En multiclass, por ejemplo, la gran mayoría de las trayectorias R fueron non-monotonic, reforzando la idea de un régimen globalmente estable en magnitud pero localmente complejo.
+
+### Take-home message
+
+> **There is no universal sequence-identity breakpoint at which predictive generalization collapses. Redundancy-driven degradation is progressive and distributed across the `90→70→50→30` trajectory, whereas homology-separation effects are weaker, more frequently non-monotonic, and become most apparent at the strictest transition. Importantly, stronger protein representations shift degradation toward more stringent sequence-space regimes, indicating that representation quality affects not only attainable performance but also where generalization begins to fail.**
+
+**Estado:** `REAL-DATA PASS` ✅. RQ20 consolidó 2,240 resultados supervised, 1,120 trayectorias supervised y 384 trayectorias PU, con ejecución completa y sin errores.
+
+Claro bebé, te lo dejaría así para pegar directo en tus notas:
+
+## RQ21 — Joint R×S trajectories and asymmetric strictness allocation
+
+RQ21 evaluó qué ocurre cuando **redundancy control (`R`) y homology separation (`S`) se vuelven estrictos simultáneamente**, utilizando la diagonal conjunta:
+
+`R90/S90 → R70/S70 → R50/S50 → R30/S30`
+
+y comparando además condiciones con **igual strictness nominal pero distinta distribución entre R y S**. El análisis cubrió las **140 superficies supervised completas**, sin reentrenamiento ni bootstrap.
+
+### Joint strictness produce una pérdida clara pero no un collapse único
+
+La transición completa `R90/S90 → R30/S30` produjo una pérdida mediana de:
+
+$$
+\Delta MCC \approx -0.084
+$$
+
+con una retención aproximada de **90.3%** del MCC basal.
+
+Los pasos conjuntos fueron:
+
+* `R90/S90 → R70/S70`: **≈ −0.021**
+* `R70/S70 → R50/S50`: **≈ −0.038**
+* `R50/S50 → R30/S30`: **≈ −0.022**
+
+El paso intermedio fue típicamente el más dañino, pero no existe evidencia de un único **joint-collapse threshold**.
+
+### Igual joint strictness no significa igual dificultad
+
+Se definió un índice ordinal de strictness conjunta `J`, donde R y S aportan entre 0 y 3 unidades cada uno.
+
+Las condiciones con el mismo valor de `J` mostraron diferencias sustanciales de performance. La mediana del rango MCC dentro de cada `J` fue aproximadamente:
+
+* `J1`: **0.027**
+* `J2`: **0.056**
+* `J3`: **0.071**
+* `J4`: **0.056**
+* `J5`: **0.029**
+
+El máximo ocurrió en `J=3`, donde `R30/S90`, `R50/S70`, `R70/S50` y `R90/S30` difieren en alrededor de **0.071 MCC** pese a tener la misma strictness ordinal total.
+
+Por tanto:
+
+> **Joint strictness is directional rather than scalar: predictive difficulty depends on how sequence-space constraints are distributed between R and S, not only on their nominal combined severity.**
+
+### R-heavy strictness suele ser más dañina
+
+Se evaluaron **840 contrastes asimétricos** entre celdas con igual `J` pero distinta distribución R/S.
+
+Globalmente:
+
+$$
+\mathrm{median}\,[M(R\text{-heavy})-M(S\text{-heavy})]
+\approx -0.024
+$$
+
+y la magnitud absoluta mediana de la diferencia fue **≈0.038 MCC**.
+
+La distribución fue:
+
+* **≈67%**: R-heavy peor
+* **≈7.6%**: aproximadamente simétrico
+* **≈25%**: S-heavy peor
+
+Por tanto, en aproximadamente dos tercios de los contrastes, asignar más strictness a R fue más perjudicial que asignarla a S.
+
+El contraste más claro fue:
+
+$$
+M(R50/S90)-M(R90/S50)\approx -0.041.
+$$
+
+### La asimetría depende fuertemente de la tarea
+
+El predominio R-heavy fue muy fuerte en:
+
+* **Global easy**: ~92.5% R-heavy peor
+* **Global mixed**: ~93.3%
+* **Endolysin**: ~95%
+* **Global hard**: ~83%
+
+Sin embargo, hubo regímenes distintos:
+
+* **Depolymerase** mostró inversión, con S-heavy siendo peor en la mayoría de los contrastes.
+* **VAL** fue prácticamente balanceado.
+* **Multiclass** mostró una asimetría débil/casi equilibrada.
+
+Esto demuestra que la dominancia global de R no elimina la existencia de **functional generalization regimes**.
+
+### T30 reduce la dependencia de cómo se distribuye la strictness
+
+ESM2-T30 mostró la menor magnitud de asimetría entre R-heavy y S-heavy:
+
+* T30: **≈0.030 MCC**
+* T6: **≈0.038**
+* Roxy: **≈0.043**
+* one-hot: **≈0.045**
+
+Además, T30 retuvo aproximadamente **92.9%** del rendimiento bajo `R30/S30`, frente a ~66.8% para one-hot.
+
+Así, T30 no solo conserva más performance bajo strictness conjunta, sino que también **reduce cuánto importa la dirección específica en que se impone esa strictness**.
+
+### Los efectos conjuntos son mayormente sub-aditivos
+
+La comparación entre performance observada y expectativa aditiva mostró:
+
+* `R70/S70`: excess **≈ +0.018 MCC**
+* `R50/S50`: **≈ +0.028**
+* `R30/S30`: **≈ +0.051**
+
+En conjunto, aproximadamente **81%** de las observaciones no basales mostraron excess positivo.
+
+Esto indica que las pérdidas conjuntas R×S suelen ser **menores que la suma directa de las penalizaciones aisladas**, es decir, existe attenuation/sub-additivity creciente bajo joint strictness más severa.
+
+### Take-home message
+
+> **Joint R×S strictness cannot be represented by a single scalar notion of sequence-space difficulty. Conditions with the same nominal strictness can differ substantially in predictive performance, and allocating strictness toward redundancy control is generally more damaging than allocating it toward homology separation. This asymmetry is strongly task-dependent, while stronger protein representations reduce both total degradation and sensitivity to how strictness is distributed. Combined R×S penalties are also predominantly sub-additive, with increasing attenuation under stricter joint regimes.**
+
+**Estado:** `REAL-DATA PASS` ✅. RQ21 analizó 2,240 celdas, 140 superficies completas, 560 puntos diagonales, 420 pasos conjuntos y 840 contrastes asimétricos, sin errores de ejecución.
+
+Claro bebé, te lo dejaría así para pegar directo en tus notas:
+
+## RQ22 — Evidence quantity and sequence-space structure
+
+RQ22 evaluó cuánto del rendimiento supervisado puede asociarse con la **cantidad de evidencia disponible** y cuánto con su **estructura**, integrando `n_train`, `n_test`, positive support, prevalence, cluster richness, cluster density, `R` y `S`. El análisis se realizó sobre **112 estados únicos `task × R × S`** y **140 superficies `task × representation × learner`**, evitando pseudorreplicar el mismo estado de evidencia a través de las 20 estrategias modelísticas.
+
+### R y S modifican la evidencia de maneras fundamentalmente distintas
+
+Al endurecer R hasta `R30`, la retención mediana respecto de `R90` fue aproximadamente:
+
+* train entities: **30.8%**
+* train cluster richness: **56.0%**
+
+Por tanto, redundancy control elimina muchas más secuencias que clusters, mostrando que **cantidad de datos y cobertura estructural del espacio de secuencia disminuyen a velocidades distintas**.
+
+En contraste, `S30` prácticamente no alteró el tamaño global del dataset:
+
+* train size: **~1.00×** respecto de S90
+* test size: **~1.00×**
+
+pero sí modificó fuertemente la estructura:
+
+* train clusters: **~0.55×**
+* train entities per cluster: **~1.82×**
+
+Por tanto:
+
+> **R is coupled to evidence attrition and structural change, whereas S primarily reorganizes sequence-space topology at nearly constant sample size.**
+
+### Performance está fuertemente asociado con la cantidad de evidencia
+
+Dentro de las superficies bloqueadas, las asociaciones medianas con MCC fueron aproximadamente:
+
+* positive train support: **ρ ≈ 0.81**
+* positive test support: **ρ ≈ 0.80**
+* `n_test`: **ρ ≈ 0.73**
+* `n_train`: **ρ ≈ 0.68**
+* train cluster richness: **ρ ≈ 0.54**
+
+Así, la cantidad de evidencia explica una fracción importante de las variaciones observadas. Cluster richness agrega información estructural relevante, pero no supera globalmente al simple sample quantity.
+
+### Los modelos descriptivos separan cantidad, estructura y protocolo
+
+Sobre las 112 celdas únicas:
+
+* `task` solo: **R² ≈ 0.803**
+* `+ n_train`: **R² ≈ 0.847**, ΔR² ≈ **+0.043**
+* `+ cluster richness`: **R² ≈ 0.866**, ΔR² ≈ **+0.019**
+* `+ S`: ΔR² ≈ **+0.001**
+* `+ R`: ΔR² ≈ **+0.009**
+
+La tarea biológica explica la mayor fracción de la variación. Training quantity agrega una contribución importante y cluster structure añade información adicional. Una vez incorporada explícitamente la estructura de clusters, S aporta poca varianza descriptiva adicional, consistente con que **gran parte de su efecto está representado por la topología que induce**.
+
+R todavía agrega una pequeña contribución descriptiva, aunque con colinealidad considerable, por lo que no debe interpretarse como un efecto causal independiente.
+
+### La mayor parte del efecto R está alineada con cambios en evidencia
+
+El efecto absoluto mediano bruto de `R90→R30` fue:
+
+$$
+|\Delta_R|\approx0.085\ MCC.
+$$
+
+Después de ajustar descriptivamente por `n_train`, quedó aproximadamente **33%** de esa magnitud.
+
+Después de ajustar por:
+
+`n_train + train cluster richness + S`
+
+la fracción residual mediana cayó a aproximadamente:
+
+$$
+\boxed{19.5\%}
+$$
+
+con un residual absolute R effect de aproximadamente:
+
+$$
+\boxed{0.015\ MCC}.
+$$
+
+Así, alrededor de cuatro quintas partes de la sensibilidad observada a R están **estadísticamente alineadas** con los cambios de cantidad y estructura de evidencia que el propio protocolo R produce.
+
+Esto no implica causal mediation.
+
+### El efecto residual de R es fuertemente task-dependent
+
+Después del ajuste por quantity + cluster structure:
+
+* **Endolysin:** ~**8%** residual
+* Global easy: ~**10%**
+* Global mixed: ~**11%**
+* Global hard: ~**21%**
+* **VAL:** ~**40%**
+* **Depolymerase:** ~**41%**
+* **Multiclass:** ~**48%**
+
+Por tanto, para tareas globales y endolysin la mayor parte de la sensibilidad a R puede asociarse con cambios de evidence state, mientras que VAL, depolymerase y multiclass conservan una fracción mucho mayor de sensibilidad residual.
+
+Esto refuerza la existencia de **functional generalization regimes**.
+
+### Las representaciones fuertes reducen también la sensibilidad residual
+
+La fracción residual mediana de R después de adjustment fue:
+
+* **ESM2-T30:** ~**11%**
+* T6: ~**20%**
+* Roxy: ~**22%**
+* one-hot: ~**22%**
+
+T30 además partía de un efecto R bruto menor. Por tanto, una representación fuerte reduce tanto la sensibilidad absoluta como la parte de esa sensibilidad que permanece después de considerar evidence quantity y cluster structure.
+
+### Positive support confirma el régimen Low-N de VAL
+
+Median positive support:
+
+* Endolysin: train ~**1668**, test ~**680**
+* Depolymerase: train ~**277**, test ~**117**
+* **VAL:** train ~**47**, test ~**18**
+
+VAL permanece claramente evidence-limited. Sin embargo, RQ22 no encontró una relación simple entre menor support y mayor spread entre modelos, por lo que la fragilidad Low-N debe seguir interpretándose principalmente mediante RQ11/RQ19 y no como una causalidad universal.
+
+### Take-home message
+
+> **Redundancy control and homology separation modify the learning problem through different evidence mechanisms. R simultaneously reduces sample quantity and alters sequence-space structure, and these measurable changes account descriptively for most of the observed redundancy-associated performance degradation. S, in contrast, leaves gross sample size nearly unchanged while strongly reorganizing cluster topology. A smaller but strongly task-dependent residual R component remains, particularly for VAL, depolymerase, and multiclass prediction, indicating that evidence quantity alone cannot fully explain the observed generalization regimes.**
+
+**Estado:** `REAL-DATA PASS` ✅. El análisis cubrió 2,240 modelos, 112 estados únicos de evidencia, 140 superficies y 1,120 contrastes extremos R/S, sin errores de ejecución.
+
+Claro bebé, te lo dejaría así para tus notas:
+
+## RQ26 — Top-K individual deployment candidates
+
+RQ26 evaluó qué modelos individuales merecen avanzar hacia deployment por endpoint, integrando **performance, strict generalization, robustness, uncertainty context y compute**, sin construir un score escalar arbitrario. La selección se realizó sobre las **140 estrategias `task × representation × learner`** y utiliza roles operacionales complementarios.
+
+### Selección adaptativa de candidatos
+
+La versión final usa un portafolio **evidence-adaptive de 2 a 4 modelos por endpoint**.
+
+Un modelo puede entrar si:
+
+* gana al menos un operational role; o
+* está dentro de **0.02 MCC** del mejor mean MCC del endpoint.
+
+No se fuerzan cuatro modelos cuando la evidencia no lo justifica. No hubo ningún `minimum_ensembleability_fill` técnico en la ejecución real.
+
+### Portafolios finales
+
+| Endpoint     |  K | Candidatos                        |
+| ------------ | -: | --------------------------------- |
+| global_easy  |  3 | T30+KNN, T30+XGB, T30+MLP         |
+| global_hard  |  4 | T30+RF, T6+KNN, T30+XGB, T30+MLP  |
+| global_mixed |  3 | T30+KNN, T30+MLP, T30+XGB         |
+| Endolysin    |  3 | T30+KNN, T30+XGB, T30+MLP         |
+| Depolymerase |  4 | T30+MLP, T30+KNN, T6+KNN, T6+MLP  |
+| VAL          |  2 | T30+MLP, T30+LR                   |
+| Multiclass   |  4 | T30+MLP, T30+XGB, T30+KNN, T30+LR |
+
+En total quedaron:
+
+$$
+\boxed{23\ individual\ candidates}
+$$
+
+### T30 domina claramente el espacio de deployment
+
+De los 23 modelos seleccionados:
+
+* **20 usan ESM2-T30**
+* **3 usan ESM2-T6**
+* **0 Roxy**
+* **0 one-hot**
+
+Por tanto, las representaciones simples quedan descartadas para deployment. T6 solo sobrevive donde aporta una ventaja operacional concreta, principalmente en **global-hard** y **depolymerase**.
+
+### Global easy
+
+**T30+KNN** domina prácticamente todos los criterios:
+
+* mean MCC ≈ **0.928**
+* worst ≈ **0.884**
+* strict `R30/S30` ≈ **0.888**
+* Pareto rate **100%**
+* near-best rate **100%**
+* runtime ≈ **2.9 s**
+
+T30+MLP y T30+XGB permanecen como alternativas competitivas y aportan learner diversity para RQ27.
+
+### Global hard
+
+El performance leader es **T30+RF**, pero **T6+KNN** sobrevive como compute-aware candidate:
+
+* mean MCC ≈ **0.927**
+* gap vs best ≈ **0.012**
+* runtime ≈ **0.65 s**
+
+frente a ~9.3 s del T30+RF.
+
+Esto constituye un trade-off performance/compute real y defendible.
+
+### Global mixed
+
+El portafolio converge completamente a T30:
+
+* T30+KNN
+* T30+MLP
+* T30+XGB
+
+KNN domina average/worst/compute, mientras MLP aporta mejor strict-generalization en algunos regímenes.
+
+### Endolysin
+
+Los tres candidatos son muy competitivos:
+
+* KNN: mejor mean MCC
+* XGB: mejor worst-case
+* MLP: aporta strict-R/interaction complementarity
+
+Esto genera un escenario especialmente adecuado para ensemble testing.
+
+### Depolymerase
+
+Es el portafolio con mayor diversidad:
+
+* T30+MLP
+* T30+KNN
+* T6+KNN
+* T6+MLP
+
+T6+KNN sobrevive por eficiencia computacional y T6+MLP por comportamiento bajo strict-R, pese a estar ligeramente fuera del gap competitivo en mean MCC.
+
+Por tanto, DPO muestra una competencia real entre **representation y learner**, no solo entre classifiers T30.
+
+### VAL
+
+Solo dos modelos quedaron justificadamente:
+
+* **T30+MLP**: mejor performance global
+* **T30+LR**: mejor comportamiento en algunos strict regimes y runtime mucho menor
+
+No se agregaron modelos débiles para completar K=4.
+
+Esto deja un único ensemble posible:
+
+$$
+\text{T30-MLP + T30-LR}
+$$
+
+y mantiene una interpretación conservadora por el régimen Low-N de VAL.
+
+### Multiclass
+
+Todos los candidatos usan T30:
+
+* MLP
+* XGB
+* KNN
+* LR
+
+pero sobreviven por roles distintos:
+
+* MLP: performance/joint-strict
+* XGB: worst-case/remote homology
+* KNN: compute-aware/rank consistency
+* LR: baja interacción y todavía competitivo
+
+Por tanto, la representación parece prácticamente congelada en T30, mientras la diversidad relevante queda en el learner layer.
+
+### Consecuencia para RQ27
+
+Los portafolios adaptativos producen:
+
+* K=2 → 1 ensemble
+* K=3 → 4 ensembles
+* K=4 → 11 ensembles
+
+Total:
+
+$$
+\boxed{46\ ensemble\ candidates}
+$$
+
+en lugar de 77 si se hubiera forzado K=4 para todos los endpoints.
+
+### Take-home message
+
+> **The deployment search converges strongly toward ESM2-T30, which accounts for 20 of the 23 selected individual candidates. Simpler representations are eliminated, while ESM2-T6 survives only where computational efficiency or strict-regime behavior provides a distinct operational advantage. Importantly, the number of defensible candidates varies naturally across endpoints, supporting compact task-specific portfolios instead of a fixed Top-K.**
+
+**Estado:** `REAL-DATA PASS` ✅. RQ26 cerró con **140 candidate profiles, 23 modelos individuales seleccionados, 7 endpoints y 46 ensembles potenciales para RQ27**, sin errores de ejecución.
+
+Claro bebé, te lo dejaría así para tus notas:
+
+## RQ27 — Ensemble complementarity and deployment value
+
+RQ27 evaluó si los **ensembles construidos exclusivamente con los candidatos congelados por RQ26** podían superar o estabilizar al mejor modelo individual. Se evaluaron todas las combinaciones posibles por endpoint mediante **unweighted soft voting** como estrategia principal y **validation-weighted soft voting** únicamente cuando los pesos podían obtenerse de forma leakage-safe desde la inner validation.
+
+### Ejecución
+
+* **23 modelos individuales** provenientes de RQ26.
+* **46 ensembles únicos**.
+* **736 evaluaciones unweighted** sobre las 16 celdas `R×S`.
+* **736 evaluaciones weighted** leakage-safe.
+* **448 análisis pairwise** de error complementarity.
+* **368/368** prediction artifacts disponibles.
+* **64** auditorías multiclass de probabilidades, todas con `argmax agreement = 1.0`.
+* MCC recomputado vs benchmark: error máximo ≈ **1.1×10⁻¹⁶**.
+* **0 errors, 0 stderr**.
+* `RQ27_EXECUTION_GATES_OK`.
+
+**Estado: `REAL-DATA PASS` ✅**
+
+---
+
+## Ganancia máxima de ensemble frente al mejor individual
+
+| Endpoint     |  Δ mean MCC | Δ worst MCC | Δ strict R30/S30 |
+| ------------ | ----------: | ----------: | ---------------: |
+| global_easy  |     +0.0041 |     +0.0058 |          +0.0047 |
+| global_hard  |     +0.0037 |     −0.0057 |          −0.0030 |
+| global_mixed |     +0.0046 | **+0.0104** |          +0.0052 |
+| Endolysin    | **+0.0066** |     +0.0052 |          +0.0097 |
+| Depolymerase |     +0.0042 |     +0.0033 |      **+0.0105** |
+| VAL          |     +0.0058 |      0.0000 |      **−0.0416** |
+| Multiclass   |     +0.0061 |     +0.0051 |      **+0.0254** |
+
+### Resultado general
+
+Los ensembles pueden mejorar el performance promedio, pero las ganancias son **modestas**, típicamente:
+
+$$
+\Delta MCC \approx 0.004-0.007
+$$
+
+No existe una ventaja universal del ensemble. Su utilidad depende fuertemente del endpoint y de si el objetivo es mejorar **mean performance, worst-case robustness o strict generalization**.
+
+---
+
+## Endpoints donde el ensemble sí parece útil
+
+### Global mixed
+
+Ensemble especialmente interesante como **stabilizer**:
+
+* mean gain ≈ **+0.0046**
+* worst-case gain ≈ **+0.0104**
+* strict gain ≈ **+0.0052**
+
+El beneficio principal no está solo en el promedio, sino en elevar el floor de generalización.
+
+### Endolysin
+
+Uno de los casos más convincentes:
+
+* mean gain ≈ **+0.0066**
+* worst gain ≈ **+0.0052**
+* strict gain ≈ **+0.0097**
+
+El ensemble `T30-KNN + T30-XGB + T30-MLP` emerge como una combinación fuerte y complementaria.
+
+### Depolymerase
+
+Ganancia promedio pequeña pero mejora clara en strict generalization:
+
+$$
+\Delta MCC_{R30/S30}\approx +0.0105
+$$
+
+`T30-MLP + T30-KNN` aparece como una combinación particularmente interesante.
+
+### Multiclass
+
+Es el endpoint con mayor ganancia bajo condiciones estrictas:
+
+$$
+\boxed{\Delta MCC_{R30/S30}\approx +0.0254}
+$$
+
+También mejora mean y worst-case.
+
+Sin embargo, **el mejor ensemble para mean, worst y strict no necesariamente es el mismo**, por lo que RQ28 deberá decidir qué propiedad operacional priorizar.
+
+---
+
+## Endpoints donde el ensemble no debería ser default
+
+### Global easy
+
+El ensemble mejora ligeramente mean, worst y strict, pero **T30-KNN individual ya es extremadamente fuerte**.
+
+La pequeña mejora puede no justificar mayor complejidad operacional.
+
+### Global hard
+
+Existe una ganancia promedio:
+
+$$
++0.0037
+$$
+
+pero viene acompañada de:
+
+* worst-case: **−0.0057**
+* strict: **−0.0030**
+
+Por tanto, el ensemble aumenta ligeramente el promedio pero **no mejora robustness**.
+
+### VAL
+
+El contraste más claro:
+
+* mean: **+0.0058**
+* worst: **0**
+* strict: **−0.0416**
+
+El ensemble suaviza precisamente la ventaja que T30-LR tenía bajo strict conditions.
+
+Dado además el régimen Low-N de VAL, el ensemble **no debería considerarse automáticamente superior**.
+
+---
+
+## Weighted voting
+
+La weighting basada en validation MCC aporta prácticamente nada respecto de soft voting uniforme.
+
+Median `weighted − unweighted` en mean MCC:
+
+* global_easy: +0.00004
+* global_hard: 0
+* global_mixed: −0.00003
+* Endolysin: −0.00001
+* DPO: 0
+* VAL: +0.00045
+* Multiclass: +0.00022
+
+Las diferencias son esencialmente cero.
+
+Además, para VAL weighting empeora considerablemente el strict performance respecto del unweighted ensemble.
+
+### Conclusión operacional
+
+> **If an ensemble is retained, unweighted soft voting should be preferred.**
+
+Es más simple, menos sensible a validation noise y no existe evidencia de una ventaja material del weighting.
+
+---
+
+## Error complementarity
+
+Los modelos Top-K cometen errores bastante similares.
+
+Median prediction disagreement:
+
+* global_easy: **1.10%**
+* global_hard: **1.57%**
+* global_mixed: **0.98%**
+* Endolysin: **0.81%**
+* DPO: **0.31%**
+* VAL: **0.13%**
+* Multiclass: **1.91%**
+
+La asociación global entre disagreement y ensemble gain es prácticamente inexistente:
+
+$$
+\rho \approx 0.06
+$$
+
+Por tanto:
+
+> **Mayor diversidad de predicciones no implica automáticamente mayor ensemble gain.**
+
+Las ganancias dependen de la **estructura de los errores complementarios**, no simplemente del nivel de disagreement.
+
+---
+
+## Take-home message
+
+> **Ensembling provides small but reproducible gains over already strong individual models, but its value is strongly endpoint-dependent. The clearest benefits occur for global-mixed, endolysin, depolymerase, and multiclass prediction, where ensembles can improve average performance, adverse-regime robustness, or strict-generalization performance. Global-hard and VAL instead reveal explicit trade-offs, showing that ensemble averaging should not be adopted by default. Validation-weighted voting offers negligible benefit over simple soft voting.**
+
+### Traducción operacional para RQ28
+
+**Ensembles selectivos, no ensembles por defecto.**
+
+Los candidatos más claros para arquitectura ensemble son:
+
+* **global_mixed**
+* **Endolysin**
+* **Depolymerase**
+* **Multiclass**
+
+Mientras que:
+
+* **global_easy** puede probablemente mantenerse como single;
+* **global_hard** no gana robustness;
+* **VAL** debería mantener la tensión MLP/LR explícita en vez de esconderla mediante averaging.
+
+Claro bebé, te lo dejaría así para tus notas:
+
+## RQ28 — Final PhageLysClass architecture
+
+RQ28 comparó tres alternativas de deployment:
+
+* **2 core**
+* **5 flat/co-equal modules**
+* **2 core + 3 auxiliary**
+
+La comparación se realizó mediante **constraint satisfaction**, no mediante un score agregado de performance, porque las arquitecturas exponen outputs con semánticas distintas.
+
+### Arquitectura final
+
+La única arquitectura que satisface todos los constraints definidos es:
+
+$$
+\boxed{\textbf{2 core + 3 auxiliary}}
+$$
+
+Resultado de constraints:
+
+| Arquitectura             | Constraints satisfechos | Todos |
+| ------------------------ | ----------------------: | ----: |
+| 2 core                   |                     7/8 |     ❌ |
+| 5 flat                   |                     3/8 |     ❌ |
+| **2 core + 3 auxiliary** |                 **8/8** | **✅** |
+
+### Core 1 — Global lytic recognition
+
+Se congela:
+
+$$
+\boxed{\texttt{global\_mixed}}
+$$
+
+como formulación global productiva.
+
+Las otras dos formulaciones quedan solo como benchmark:
+
+* `global_easy` → evaluation only
+* `global_hard` → stress-test / evaluation only
+* `global_mixed` → **production core**
+
+La evidencia matched entre formulaciones muestra:
+
+* hard − easy ≈ **+0.169 MCC**
+* mixed − easy ≈ **−0.004**
+* hard − mixed ≈ **+0.167**
+
+Por tanto, hard constituye un régimen diferente, mientras mixed conserva el problema global más amplio.
+
+#### Recipe congelada
+
+**ESM2-T30 KNN + ESM2-T30 MLP**
+
+con **unweighted soft voting**.
+
+Performance aproximado:
+
+* mean MCC ≈ **0.928**
+* worst ≈ **0.884**
+* strict `R30/S30` ≈ **0.887**
+
+---
+
+## Core 2 — Functional multiclass
+
+El segundo core realiza la asignación funcional primaria:
+
+$$
+\text{Endolysin / Depolymerase / VAL}
+$$
+
+Recipe congelada:
+
+$$
+\boxed{\text{ESM2-T30 XGB + ESM2-T30 LR}}
+$$
+
+con unweighted soft voting.
+
+Performance:
+
+* mean MCC ≈ **0.890**
+* worst ≈ **0.841**
+* strict `R30/S30` ≈ **0.910**
+
+La selección priorizó strict generalization y worst-case manteniéndose dentro del band competitivo de `0.02 MCC`.
+
+---
+
+## Auxiliary modules
+
+Los tres modelos binarios se conservan como **compatibility diagnostics**, no como clasificadores equivalentes al multiclass.
+
+### Endolysin auxiliary
+
+$$
+\boxed{\text{T30-KNN + T30-XGB + T30-MLP}}
+$$
+
+* mean ≈ **0.929**
+* worst ≈ **0.867**
+* strict ≈ **0.894**
+
+### Depolymerase auxiliary
+
+$$
+\boxed{\text{T30-MLP + T30-KNN}}
+$$
+
+* mean ≈ **0.924**
+* worst ≈ **0.886**
+* strict ≈ **0.941**
+
+### VAL auxiliary
+
+$$
+\boxed{\text{T30-MLP}}
+$$
+
+single model.
+
+* mean ≈ **0.858**
+* worst ≈ **0.755**
+* strict ≈ **0.842**
+
+VAL mantiene un warning explícito de **evidence limitation / Low-N**.
+
+No se utiliza ensemble para VAL porque RQ27 mostró que el ensemble mejora ligeramente el average pero reduce el strict performance respecto del mejor individual en aproximadamente:
+
+$$
+\Delta MCC_{\text{strict}}\approx -0.042.
+$$
+
+---
+
+## Por qué no usar 5 flat models
+
+RQ11 mostró que binary subtype prediction y multiclass discrimination **no son intercambiables**.
+
+Median F1:
+
+| Subtipo   | Binary | Multiclass | Δ multi−binary |
+| --------- | -----: | ---------: | -------------: |
+| Endolysin |  0.719 |      0.969 |     **+0.252** |
+| DPO       |  0.843 |      0.900 |     **+0.058** |
+| VAL       |  0.400 |      0.299 |     **−0.112** |
+
+La dirección incluso se invierte para VAL.
+
+Por tanto:
+
+> Binary subtype models represent **compatibility against non-lytic background**, while multiclass represents **relative functional discrimination among lytic alternatives**.
+
+Los binaries deben conservarse como auxiliares, pero no competir con el multiclass como cinco outputs equivalentes.
+
+---
+
+## Convergencia de representation
+
+Una conclusión operacional importante es que **todos los recipes congelados utilizan ESM2-T30**.
+
+Por tanto:
+
+$$
+\boxed{\text{one shared T30 representation for the entire production stack}}
+$$
+
+No quedan Roxy, one-hot ni T6 en la arquitectura final.
+
+Esto permite generar el embedding una sola vez y reutilizarlo en todos los módulos.
+
+---
+
+## Complejidad final
+
+### Default inference
+
+Dos core modules:
+
+* global ensemble = 2 estimators
+* multiclass ensemble = 2 estimators
+
+Total:
+
+$$
+\boxed{4\ fitted\ estimators}
+$$
+
+con un único embedding T30 compartido.
+
+### Full diagnostic mode
+
+Incluyendo auxiliaries:
+
+* Core global: 2
+* Core multiclass: 2
+* Endolysin auxiliary: 3
+* DPO auxiliary: 2
+* VAL auxiliary: 1
+
+Total:
+
+$$
+\boxed{10\ fitted\ estimators}
+$$
+
+pero siempre reutilizando la misma representación T30.
+
+---
+
+## Ensemble policy
+
+RQ28 congela:
+
+$$
+\boxed{\text{unweighted soft voting}}
+$$
+
+para todos los ensembles productivos.
+
+Validation-weighted voting queda descartado porque RQ27 mostró diferencias prácticamente nulas respecto de unweighted voting.
+
+---
+
+## Flujo productivo
+
+```text
+Sequence
+   ↓
+ESM2-T30 embedding
+   ↓
+Global lytic core
+KNN + MLP
+   ↓
+Lytic?
+   ↓
+Multiclass functional core
+XGB + LR
+   ↓
+Endolysin / DPO / VAL
+   ↓
+Optional diagnostics:
+├── Endolysin compatibility
+├── DPO compatibility
+└── VAL compatibility + evidence warning
+```
+
+Los auxiliary scores **no votan contra ni reemplazan** la predicción multiclass. Sirven como evidencia complementaria y para detectar posibles inconsistencias/ambigüedades.
+
+PU permanece completamente separado como workflow de discovery.
+
+---
+
+## Freeze boundary
+
+RQ28 congela:
+
+* task formulation;
+* representations;
+* learners;
+* ensemble membership;
+* voting scheme;
+* core/auxiliary roles;
+* output precedence.
+
+No congela todavía los pesos finales de modelos entrenados.
+
+Los ejes `R/S` siguen siendo perturbaciones experimentales del benchmark y **no se convierten en una política productiva de training**.
+
+El siguiente paso es entrenar/refitear los recipes congelados bajo un protocolo productivo all-data y validarlos end-to-end en RQ29.
+
+### Take-home message
+
+> **PhageLysClass adopts a hierarchical `2 core + 3 auxiliary` architecture: global-mixed provides broad lytic recognition, clean multiclass provides the primary functional assignment, and three binary subtype models are retained as optional compatibility diagnostics. All frozen production recipes converge to ESM2-T30 and use unweighted soft voting where ensembles are retained.**
+
+Versión corta:
+
+> **One representation, two core decisions, three optional diagnostics.**
+
+**Estado:** `RQ28 — REAL-DATA PASS ✅`.
+
+Claro bebé. Para tus notas, dejaría **RQ25** así, ya como **síntesis final del benchmark completo**.
+
+# RQ25 — Final generalization-regime synthesis
+
+RQ25 integra la evidencia acumulada sobre **task definition, redundancia (`R`), homology separation (`S`), interacción R×S, representation, learner, uncertainty, PU, evidence structure, compute y deployment**, y reemplaza definitivamente el template prematuro anterior. El resultado final no soporta un único régimen ni un único modelo ganador: **la generalización depende de la combinación entre formulación biológica del problema, estructura de la evidencia y capacidad de representación**. El propio notebook formaliza siete regímenes task-specific y conecta la síntesis con la arquitectura productiva congelada. 
+
+**Estado: `RQ25 — REAL-DATA PASS` ✅**
+
+## Backbone R/S y capacidad de representación
+
+| Task         |    R30−R90 | S30−S90 |     T30−T6 | Lectura principal                        |
+| ------------ | ---------: | ------: | ---------: | ---------------------------------------- |
+| global_easy  | **−0.102** |  −0.018 | **+0.113** | R-dominant + capacity-sensitive          |
+| global_hard  |     −0.046 |  −0.007 | **+0.008** | high-separability / saturated            |
+| global_mixed | **−0.103** |  −0.023 | **+0.104** | R-dominant broad recognition             |
+| Endolysin    | **−0.143** |  −0.019 | **+0.134** | más sensible a redundancy/representation |
+| DPO          |     +0.018 |  −0.008 |     +0.021 | irregular / direction-dependent          |
+| VAL          |     −0.044 |  −0.035 | **+0.121** | Low-N + non-monotonic                    |
+| Multiclass   |     −0.023 |  −0.020 |     +0.030 | estable en magnitud, localmente complejo |
+
+En términos generales, **R domina sobre S**, mientras T30 aporta especialmente en global easy/mixed y Endolysin. Global hard presenta muy poco headroom T30−T6, consistente con un régimen cercano a saturation. La ventaja de T30 sobre T6 ya había mostrado una mediana global aproximada de `+0.077 MCC`, pero con una dependencia muy fuerte del task. 
+
+## No existe un breakpoint universal
+
+La degradación supervised al reducir redundancia está distribuida:
+
+$$
+90\rightarrow70 \approx -0.0220
+$$
+
+$$
+70\rightarrow50 \approx -0.0236
+$$
+
+$$
+50\rightarrow30 \approx -0.0222.
+$$
+
+Por tanto, no existe un threshold de identidad a partir del cual “colapse” universalmente la generalización. Además, cerca de **44.5% de las trayectorias R son non-monotonic**.
+
+Para `S`, el efecto es más pequeño pero aumenta hacia el régimen más estricto:
+
+$$
+-0.0018,\quad -0.0054,\quad -0.0081,
+$$
+
+con aproximadamente **63% de trayectorias non-monotonic**. El análisis previo ya mostraba que el efecto global `S90→S30` ronda `−0.017 MCC` y es mucho menor que el efecto de R. 
+
+## Joint R×S: la dificultad tiene magnitud y dirección
+
+La trayectoria conjunta `R90/S90 → R30/S30` produce una pérdida mediana aproximada de:
+
+$$
+\boxed{-0.084\ MCC}
+$$
+
+con retention cercana al **90%**.
+
+Pero condiciones con la misma strictness ordinal pueden diferir notablemente dependiendo de **cómo se distribuye la restricción entre R y S**. Globalmente:
+
+* median same-J range ≈ **0.047 MCC**
+* median allocation difference ≈ **0.039**
+* ~**67%** de los matched contrasts son peores cuando la strictness se carga más hacia R
+* joint excess over additive ≈ **+0.03**, indicando frecuente **subaditividad/attenuation**
+
+Por tanto:
+
+> **Generalization difficulty has both magnitude and direction.**
+
+RQ25 conserva explícitamente que no debe reemplazarse el landscape R×S por un único scalar de “sequence-space difficulty”. 
+
+## R y S modifican la evidencia de manera distinta
+
+RQ22 aporta la interpretación mecanística central.
+
+Con `R30` queda aproximadamente:
+
+* **30.8%** de las training entities
+* **56.0%** de la cluster richness.
+
+En cambio, `S30` deja prácticamente intacto el tamaño train, pero reduce la cluster richness a ~**55%** y aumenta las entidades por cluster aproximadamente **1.82×**.
+
+Así:
+
+> **R removes evidence quantity and changes redundancy structure; S mainly reorganizes evidence topology.**
+
+La reducción de R no debe interpretarse simplemente como “menos datos”, y S tampoco como un mero “split más difícil”. 
+
+## Cuánto del efecto R permanece después de considerar evidence quantity/structure
+
+Globalmente:
+
+$$
+|R|_{\mathrm{raw}}\approx0.085\ MCC
+$$
+
+y después de ajustar descriptivamente por `n_train + cluster richness`:
+
+$$
+|R|_{\mathrm{residual}}\approx0.015\ MCC.
+$$
+
+La mediana del residual fraction es aproximadamente:
+
+$$
+\boxed{0.195}
+$$
+
+es decir, alrededor de **cuatro quintos del R-associated variation están estadísticamente alineados con cambios medibles en cantidad y estructura de evidencia**.
+
+Pero el residual es fuertemente task-dependent:
+
+| Task         | Residual R fraction |
+| ------------ | ------------------: |
+| Endolysin    |            **8.4%** |
+| global_easy  |           **10.4%** |
+| global_mixed |           **10.8%** |
+| global_hard  |               20.5% |
+| VAL          |           **40.1%** |
+| DPO          |           **41.2%** |
+| Multiclass   |           **48.3%** |
+
+Esto es una de las evidencias más claras de que los functional tasks ocupan **generalization regimes distintos**. 
+
+T30 además presenta el residual más bajo por representation: aproximadamente **11.4%**, frente a ~20–22% para T6/Roxy/one-hot. 
+
+## Robustness: no existe un único “winner”
+
+RQ17 confirma que peak, average, worst-case, rank, regret y strict performance pueden seleccionar estrategias diferentes.
+
+La conclusión final es:
+
+> **A single universal model winner is not supported.**
+
+T30 domina la representación, pero learner y strategy óptimos cambian según el criterio operacional. Esto justifica que deployment no se haya construido mediante un score compuesto arbitrario.
+
+## VAL constituye el régimen evidence-limited más claro
+
+VAL tiene aproximadamente:
+
+* **47 positivos train**
+* **18 positivos test** medianos
+* intervalos bootstrap MCC muy amplios, alrededor de **0.3 MCC**
+* respuesta R/S fuertemente irregular
+* residual-R ≈ **40%**
+
+Por tanto:
+
+> **VAL = Low-N / evidence-limited / high-uncertainty regime.**
+
+Esto justifica mantenerlo como **auxiliary compatibility output con warning explícito**, y no como un core output independiente.
+
+## PU define dos regímenes operacionales distintos
+
+Naive, BaggingPU y Elkan–Noto muestran known-positive recovery muy parecido con representaciones fuertes, especialmente T30.
+
+Sin embargo, BaggingPU puede modificar sustancialmente el ranking del universo U, mientras EN conserva casi completamente el ranking naive y actúa principalmente como score correction.
+
+Por tanto:
+
+> **PU recovery and PU discovery are distinct operational regimes.**
+
+El PU permanece como workflow separado de discovery y no entra en el core supervised de PhageLysClass. 
+
+## Deployment como consecuencia de los regímenes
+
+RQ26 seleccionó **23 individual candidates**:
+
+* **20 T30**
+* **3 T6**
+* 0 Roxy
+* 0 one-hot.
+
+RQ27 mostró que los ensembles aportan ganancias pequeñas pero endpoint-dependent:
+
+| Endpoint     |    Mejor efecto destacable |
+| ------------ | -------------------------: |
+| global_mixed | worst-case **+0.0104 MCC** |
+| Endolysin    |           mean **+0.0066** |
+| DPO          |         strict **+0.0105** |
+| Multiclass   |         strict **+0.0254** |
+| global_hard  |          worst **−0.0057** |
+| VAL          |         strict **−0.0416** |
+
+Por tanto:
+
+> **Ensembling is selectively useful, not universally superior.**
+
+Weighted voting tampoco aporta una mejora material, por lo que la arquitectura final utiliza **unweighted soft voting**.
+
+## Regímenes finales por task
+
+| Task             | Generalization regime final                                           | Deployment          |
+| ---------------- | --------------------------------------------------------------------- | ------------------- |
+| **global_easy**  | capacity-sensitive + redundancy-sensitive                             | evaluation only     |
+| **global_hard**  | high-separability / capacity-saturated                                | stress-test only    |
+| **global_mixed** | capacity-sensitive, R-dominant broad recognition                      | **core global**     |
+| **Endolysin**    | redundancy- and representation-limited; evidence-attrition dominated  | auxiliary           |
+| **DPO**          | high-floor, direction/interaction-dependent; large residual-R         | auxiliary           |
+| **VAL**          | Low-N, evidence-limited, uncertain and non-monotonic                  | auxiliary + warning |
+| **Multiclass**   | stable overall but locally complex; strongest strict ensemble benefit | **core functional** |
+
+El catálogo final codifica estas etiquetas como **descriptive synthesis labels**, no como una nueva clasificación estadística. 
+
+## Arquitectura final derivada del benchmark
+
+La síntesis termina convergiendo hacia:
+
+$$
+\boxed{\textbf{one shared ESM2-T30 representation}}
+$$
+
+y:
+
+$$
+\boxed{\textbf{2 core + 3 auxiliary}}
+$$
+
+con:
+
+```text
+Sequence
+   ↓
+ESM2-T30
+   ↓
+Global mixed core
+   ↓
+Clean multiclass core
+   ↓
+Optional:
+Endolysin / DPO / VAL compatibility
+```
+
+`global_easy` y `global_hard` permanecen únicamente como formulaciones de evaluación; `global_mixed` es el core global productivo. VAL permanece auxiliary y weighted ensembles quedan explícitamente excluidos. 
+
+## Take-home message
+
+> **Generalization in phage lytic-function prediction is jointly determined by biological task formulation, redundancy-dependent evidence availability, train–test homology topology, representation capacity, and finite evidence support. Redundancy reduction is the dominant global perturbation, but much of its apparent penalty is statistically aligned with measurable changes in evidence quantity and structure. Homology separation is weaker and mainly reorganizes evaluation topology, while joint R×S difficulty is directional and frequently sub-additive. Strong pretrained representations—especially ESM2-T30—provide the most transferable foundation, whereas learner choice and ensembling contribute smaller, endpoint-specific gains.**
+
+Y para cerrar tus notas con la frase operacional:
+
+> **The benchmark does not reveal one universal model or one universal generalization regime; it reveals task-specific regimes that naturally lead to one shared representation, two core decisions, and three optional diagnostics.**
+
+**Estado final:** `RQ25 — REAL-DATA PASS ✅`.
