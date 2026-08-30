@@ -1,0 +1,25 @@
+{
+  "schema_version": "phagelysclass-inference-run-v1",
+  "generated_utc": "2026-08-30T11:59:56.237479+00:00",
+  "input_fasta": "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/phagelysclass_inference/known_positive_depolymerase_demo.fasta",
+  "model_root": "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/models/phagelysclass_v1",
+  "model_version": "phagelysclass_v1",
+  "architecture_id": "C_2_core_plus_3_aux",
+  "representation": "esm2_t30_150m",
+  "embedding_backend": "sylphy",
+  "checkpoint": "facebook/esm2_t30_150M_UR50D",
+  "embedding_pool": "mean",
+  "embedding_precision": "fp32",
+  "embedding_dimension": 640,
+  "device": "cuda",
+  "batch_size": 16,
+  "auxiliary": true,
+  "n_sequences": 5,
+  "n_valid": 5,
+  "n_invalid": 0,
+  "runtime_seconds": {
+    "embedding": 3.875195895001525,
+    "model_inference": 0.6790840850007953,
+    "total": 4.702012319001369
+  }
+}
