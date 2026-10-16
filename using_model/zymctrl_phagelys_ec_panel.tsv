@@ -1,0 +1,11 @@
+ec_number	panel_block	class_relation	activity	rationale	n_sequences
+3.2.1.17	peptidoglycan_lytic	Endolysin_or_VAL	lysozyme / N-acetylmuramidase	Canonical phage peptidoglycan glycosidase; major endolysin catalytic activity.	1000
+3.2.1.52	peptidoglycan_lytic	Endolysin_or_VAL	beta-N-acetylhexosaminidase / glucosaminidase	Represents the glucosaminidase branch of phage peptidoglycan hydrolases.	1000
+3.5.1.28	peptidoglycan_lytic	Endolysin_or_VAL	N-acetylmuramoyl-L-alanine amidase	Canonical phage endolysin amidase activity targeting the MurNAc-L-Ala bond.	1000
+4.2.2.29	peptidoglycan_lytic	Endolysin_or_VAL	peptidoglycan lytic transglycosylase	Non-hydrolytic peptidoglycan cleavage relevant to phage lytic enzymes and VALs.	1000
+3.4.24.75	peptidoglycan_lytic	Endolysin_or_VAL	glycyl-glycine endopeptidase / M23 peptidase	Represents the peptidase/endopeptidase branch of peptidoglycan lytic activity.	1000
+3.2.1.87	surface_depolymerase	Depolymerase	capsular-polysaccharide endo-1,3-alpha-galactosidase	Directly associated with phage capsule depolymerases and tailspike proteins.	1000
+3.2.1.129	surface_depolymerase	Depolymerase	endo-alpha-sialidase / endosialidase	Classic bacteriophage tailspike activity degrading polysialic-acid capsules.	1000
+4.2.2.1	surface_depolymerase	Depolymerase	hyaluronate lyase	Capsule-degrading lyase with established bacteriophage/prophage examples.	1000
+4.2.2.3	surface_depolymerase	Depolymerase	mannuronate-specific alginate lyase	Represents alginate/EPS-degrading polysaccharide lyases relevant to phage depolymerases.	1000
+3.2.1.65	surface_depolymerase	Depolymerase	levanase	Phage-associated endo-levanase activity targeting bacterial extracellular polysaccharide.	1000

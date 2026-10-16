@@ -1,0 +1,77 @@
+{
+  "model": "AI4PD/ZymCTRL",
+  "panel": [
+    {
+      "ec_number": "3.2.1.17",
+      "panel_block": "peptidoglycan_lytic",
+      "class_relation": "Endolysin_or_VAL",
+      "activity": "lysozyme / N-acetylmuramidase"
+    },
+    {
+      "ec_number": "3.2.1.52",
+      "panel_block": "peptidoglycan_lytic",
+      "class_relation": "Endolysin_or_VAL",
+      "activity": "beta-N-acetylhexosaminidase / glucosaminidase"
+    },
+    {
+      "ec_number": "3.5.1.28",
+      "panel_block": "peptidoglycan_lytic",
+      "class_relation": "Endolysin_or_VAL",
+      "activity": "N-acetylmuramoyl-L-alanine amidase"
+    },
+    {
+      "ec_number": "4.2.2.29",
+      "panel_block": "peptidoglycan_lytic",
+      "class_relation": "Endolysin_or_VAL",
+      "activity": "peptidoglycan lytic transglycosylase"
+    },
+    {
+      "ec_number": "3.4.24.75",
+      "panel_block": "peptidoglycan_lytic",
+      "class_relation": "Endolysin_or_VAL",
+      "activity": "glycyl-glycine endopeptidase / M23 peptidase"
+    },
+    {
+      "ec_number": "3.2.1.87",
+      "panel_block": "surface_depolymerase",
+      "class_relation": "Depolymerase",
+      "activity": "capsular-polysaccharide endo-1,3-alpha-galactosidase"
+    },
+    {
+      "ec_number": "3.2.1.129",
+      "panel_block": "surface_depolymerase",
+      "class_relation": "Depolymerase",
+      "activity": "endo-alpha-sialidase / endosialidase"
+    },
+    {
+      "ec_number": "4.2.2.1",
+      "panel_block": "surface_depolymerase",
+      "class_relation": "Depolymerase",
+      "activity": "hyaluronate lyase"
+    },
+    {
+      "ec_number": "4.2.2.3",
+      "panel_block": "surface_depolymerase",
+      "class_relation": "Depolymerase",
+      "activity": "mannuronate-specific alginate lyase"
+    },
+    {
+      "ec_number": "3.2.1.65",
+      "panel_block": "surface_depolymerase",
+      "class_relation": "Depolymerase",
+      "activity": "levanase"
+    }
+  ],
+  "per_ec": 1000,
+  "total_requested": 10000,
+  "batch_size": 10,
+  "max_length": 1024,
+  "top_k": 9,
+  "repetition_penalty": 1.2,
+  "temperature": 1.0,
+  "seed": 42,
+  "device": "cuda",
+  "eos_token_id": 1,
+  "pad_token_id": 0,
+  "acceptance_policy": "completed before max_length + canonical amino acids + globally unique sequence; perplexity recorded but not used for filtering"
+}
