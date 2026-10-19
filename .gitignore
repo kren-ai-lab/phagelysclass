@@ -221,3 +221,7 @@ data/
 results/
 models
 EDA_results/
+ambiguous_structural_input/
+phagelys_prediction_extension_h30/
+zymctrl_phagelys_panel/
+zymctrl_phagelys_predictions/
