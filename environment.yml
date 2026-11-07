@@ -1,0 +1,64 @@
+# PhageLysClass release environment
+#
+# Python and the five version-pinned Python packages below are recorded in
+# models/phagelysclass_v1/manifest.json (frozen production model release).
+# Versions of other dependencies were not recorded in that manifest, so they
+# are intentionally left unpinned rather than presented as historical facts.
+#
+# MMseqs2 is provided by Bioconda and supplies the `mmseqs` executable used
+# by BioSieve for redundancy reduction and homology-aware splitting.
+# Its historical build/version was not available in the release manifest.
+#
+# Roxy's PyPI distribution is `roxylib` (imported as `roxy`).
+# The Sylphy `embeddings` extra provides the PLM embedding integration.
+#
+# This specification is documentary: installation/solver resolution and
+# CPU/GPU compatibility have not been tested as part of the repository release.
+
+name: phagelysclass
+
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+
+dependencies:
+  # Recorded Python version
+  - python=3.12.14
+  - pip
+
+  # Native sequence-clustering tool used by BioSieve
+  - mmseqs2
+
+  - pip:
+      # Recorded software versions in the frozen production model manifest
+      - numpy==2.5.2
+      - pandas==3.0.5
+      - scikit-learn==1.9.0
+      - joblib==1.5.3
+      - xgboost==3.4.1
+
+      # Sequence datasets, numerical analysis and parquet/sparse IO
+      - scipy
+      - pyarrow
+      - polars
+      - requests
+
+      # Protein-sequence processing and representations
+      - biosieve
+      - roxylib
+      - sylphy[embeddings]
+
+      # Protein language models and ZymCTRL sequence generation
+      - torch
+      - transformers
+      - tqdm
+
+      # Exploratory analysis, figures, and manifold visualizations
+      - matplotlib
+      - seaborn
+      - umap-learn
+
+      # Scientific notebooks
+      - ipykernel
+      - jupyterlab

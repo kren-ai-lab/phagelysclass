@@ -1,0 +1,11 @@
+ec_number	panel_block	class_relation	activity	target	accepted	attempted	batches	rejected_total	rejection_reasons
+3.2.1.17	peptidoglycan_lytic	Endolysin_or_VAL	lysozyme / N-acetylmuramidase	1000	1000	1004	101	4	"{""duplicate_sequence"": 3, ""noncanonical:X"": 1}"
+3.2.1.52	peptidoglycan_lytic	Endolysin_or_VAL	beta-N-acetylhexosaminidase / glucosaminidase	1000	1000	1005	101	5	"{""noncanonical:X"": 5}"
+3.5.1.28	peptidoglycan_lytic	Endolysin_or_VAL	N-acetylmuramoyl-L-alanine amidase	1000	1000	1019	102	19	"{""duplicate_sequence"": 18, ""noncanonical:X"": 1}"
+4.2.2.29	peptidoglycan_lytic	Endolysin_or_VAL	peptidoglycan lytic transglycosylase	1000	1000	1005	101	5	"{""noncanonical:X"": 1, ""truncated_no_eos"": 4}"
+3.4.24.75	peptidoglycan_lytic	Endolysin_or_VAL	glycyl-glycine endopeptidase / M23 peptidase	1000	1000	1005	101	5	"{""noncanonical:X"": 1, ""truncated_no_eos"": 4}"
+3.2.1.87	surface_depolymerase	Depolymerase	capsular-polysaccharide endo-1,3-alpha-galactosidase	1000	1000	1000	100	0	{}
+3.2.1.129	surface_depolymerase	Depolymerase	endo-alpha-sialidase / endosialidase	1000	1000	1007	101	7	"{""truncated_no_eos"": 7}"
+4.2.2.1	surface_depolymerase	Depolymerase	hyaluronate lyase	1000	1000	1000	100	0	{}
+4.2.2.3	surface_depolymerase	Depolymerase	mannuronate-specific alginate lyase	1000	1000	1001	101	1	"{""noncanonical:X"": 1}"
+3.2.1.65	surface_depolymerase	Depolymerase	levanase	1000	1000	1000	100	0	{}

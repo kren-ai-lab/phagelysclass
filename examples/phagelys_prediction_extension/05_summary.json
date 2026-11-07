@@ -1,0 +1,56 @@
+{
+  "source_file": "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelys_data_organized/data_release/PhageLysData_v1.0/prediction_extension/phagelysdata_prediction_extension.parquet",
+  "source_sha256": "a7bda14ffed0b8a7430792f205188367b3dcf6cf612fe1772424dfb9576e9127",
+  "source_rows": 745092,
+  "prediction_extension_rows": 745092,
+  "qc_pass_unique_rows": 717489,
+  "qc_rejected_rows": 27603,
+  "qc_rejection_counts": {
+    "noncanonical:X": 4858,
+    "length_gt_1024": 22745
+  },
+  "mmseqs_identity_threshold": 0.3,
+  "mmseqs_coverage": 0.8,
+  "biosieve_identity_param": "min_seq_id",
+  "biosieve_coverage_param": "coverage",
+  "representatives": 58284,
+  "removed_by_mmseqs2": 659205,
+  "retained_fraction_after_mmseqs2": 0.08123330113771779,
+  "max_sequence_length": 1024,
+  "canonical_alphabet": "ACDEFGHIKLMNPQRSTVWY",
+  "software": {
+    "biosieve": "/home/david/miniconda3/envs/phagelysclass/bin/biosieve",
+    "mmseqs": "/home/david/miniconda3/envs/phagelysclass/bin/mmseqs",
+    "biosieve_version": "biosieve 0.1.2",
+    "mmseqs_version": "18.8cc5c"
+  },
+  "biosieve_command": [
+    "biosieve",
+    "reduce",
+    "-i",
+    "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/using_model/phagelys_prediction_extension_h30/03_biosieve_input.csv",
+    "-o",
+    "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/using_model/phagelys_prediction_extension_h30/04_biosieve_representatives.csv",
+    "--strategy",
+    "mmseqs2",
+    "--mapping-output",
+    "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/using_model/phagelys_prediction_extension_h30/04_biosieve_mapping.csv",
+    "--report-output",
+    "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/using_model/phagelys_prediction_extension_h30/04_biosieve_report.json",
+    "--set",
+    "mmseqs2.min_seq_id=0.3",
+    "--set",
+    "mmseqs2.coverage=0.8"
+  ],
+  "outputs": {
+    "prediction_extension_extracted": "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/using_model/phagelys_prediction_extension_h30/01_prediction_extension_extracted.tsv.gz",
+    "qc_pass": "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/using_model/phagelys_prediction_extension_h30/02_qc_pass.tsv.gz",
+    "qc_rejected": "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/using_model/phagelys_prediction_extension_h30/02_qc_rejected.tsv.gz",
+    "biosieve_input": "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/using_model/phagelys_prediction_extension_h30/03_biosieve_input.csv",
+    "biosieve_representatives": "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/using_model/phagelys_prediction_extension_h30/04_biosieve_representatives.csv",
+    "biosieve_mapping": "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/using_model/phagelys_prediction_extension_h30/04_biosieve_mapping.csv",
+    "biosieve_report": "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/using_model/phagelys_prediction_extension_h30/04_biosieve_report.json",
+    "final_representatives_tsv": "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/using_model/phagelys_prediction_extension_h30/05_phagelys_prediction_extension_H30_representatives.tsv.gz",
+    "final_representatives_fasta": "/home/david/Desktop/colabs/inta_project/phagelytic_core_project/phagelysclass/using_model/phagelys_prediction_extension_h30/05_phagelys_prediction_extension_H30_representatives.fasta"
+  }
+}
